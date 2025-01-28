@@ -1,2 +1,12 @@
 .apivenv/
 /.apivenv
+.env
+/.env
+apibackend/.env
+apibackend\\.env
+/apibackend/.env
+\\apibackend\\.env
+apibackend/__pycache__
+apibackend\\__pycache__
+/apibackend/__pycache__
+\\apibackend\\__pycache__
