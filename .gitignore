@@ -10,3 +10,9 @@ apibackend/__pycache__
 apibackend\\__pycache__
 /apibackend/__pycache__
 \\apibackend\\__pycache__
+__pycache__/
+**/__pycache__/
+apibackend/uploads
+apibackend\\uploads
+/apibackend/uploads
+\\apibackend\\uploads

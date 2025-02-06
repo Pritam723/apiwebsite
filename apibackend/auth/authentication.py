@@ -15,7 +15,7 @@ def create_token(user_id, password):
         print("No user matches. Returning 401")
         return jsonify({"msg": "Bad username or password"}), 401
 
-    customIdentity = {"user_id": user_id, "department": "IT", "eid" : "00091", "name" : "Pritam"}
+    customIdentity = {"user_id": user_id, "department": "IT", "eid" : "00091", "name" : "Pritam Dutta", "email" : "pritam.dutta@grid-india.in", "organization" : "ERLDC GRID-INDIA"}
     # additional_claims = {"aud": "some_audience", "foo": "bar"}
     additional_claims = {}
     access_token = create_access_token(identity=customIdentity, additional_claims=additional_claims)
@@ -25,7 +25,7 @@ def create_token(user_id, password):
     # print(payload)
 
 
-    return jsonify(access_token=access_token, refresh_token=refresh_token)
+    return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
 
 # We are using the `refresh=True` options in jwt_required to only allow
