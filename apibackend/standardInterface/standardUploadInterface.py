@@ -6,7 +6,7 @@ import base64
 from codecs import encode
 import os
 
-def save_with_unique_name(uploadFolder, file):
+def saveWithUniqueName(uploadFolder, file):
     os.makedirs(uploadFolder, exist_ok=True)
     fileName = file["fileName"]
     base, ext = os.path.splitext(fileName)  # Split filename and extension
@@ -31,7 +31,7 @@ def save_with_unique_name(uploadFolder, file):
 
 def addDataToStandardTable(product, files, targetTableClass):
     # Database Logic to add data in Database.
-    try:
+    # try:
 
         if(not (product and files and targetTableClass)):
             raise Exception("Insufficient Data Sent from Client!!")
@@ -60,7 +60,7 @@ def addDataToStandardTable(product, files, targetTableClass):
             # 'extension': 'csv',
             # 'base64Data': 'data:text/csv;base64,77u/IkNvZG...9yaWVzIiwiNzMi'}
 
-            newFileName = save_with_unique_name(uploadFolder, file)
+            newFileName = saveWithUniqueName(uploadFolder, file)
 
             # product["id"] = "56599ebb-585a-4be1-af2c-6208f70e1dd4"
             # id will be auto generated uuid
@@ -72,10 +72,12 @@ def addDataToStandardTable(product, files, targetTableClass):
             product["isDeleted"] = False
             product["filePath"] = f"{uploadFolder}\{newFileName}"
 
+            print(product)
             product_to_add = eval(targetTableClass)(**product)
             products_to_add.append(product_to_add)
 
         # Add all products to the session
+        # print(products_to_add)
         db.session.add_all(products_to_add)
         db.session.commit()
         # Print inserted IDs
@@ -96,15 +98,15 @@ def addDataToStandardTable(product, files, targetTableClass):
 
         return jsonify(jsonData), 200
     
-    except Exception as e:
-        print(e)
+    # except Exception as e:
+    #     print(e)
 
-        jsonData = {
-            "success": False,
-            "type": "error",
-            "summary":"Something went wrong",
-            "message": "An error occurred while uploading.",
-            "error": str(e)
-        }
+    #     jsonData = {
+    #         "success": False,
+    #         "type": "error",
+    #         "summary":"Something went wrong",
+    #         "message": "An error occurred while uploading.",
+    #         "error": str(e)
+    #     }
 
-        return jsonify(jsonData), 500
+    #     return jsonify(jsonData), 500

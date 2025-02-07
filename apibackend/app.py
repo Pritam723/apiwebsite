@@ -14,6 +14,8 @@ from dotenv import load_dotenv
 from auth import authentication
 from standardInterface.standardUploadInterface import addDataToStandardTable
 from standardInterface.standardQueryInterface import fetchDataFromStandardTable
+from standardInterface.standardInterfaceUtilities import getFinancialYearList
+
 from models.models import db, Task
 
 
@@ -36,7 +38,7 @@ db.init_app(app)
 
 # Setting up File Upload Settings
 UPLOAD_FOLDER = 'uploads'  # Directory to store files
-MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # Limit file size to 16MB
+MAX_CONTENT_LENGTH = 25 * 1024 * 1024  # Limit file size to 25MB
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
@@ -56,6 +58,16 @@ def hello():
     print(os.getenv('JWT_KEY'))
     print(len(os.getenv('JWT_KEY')))
     return 'Hello, World!'
+
+
+############################# Utility Functions #####################################
+
+@app.route("/getFYList", methods=["GET"])
+def getFYList():
+    return getFinancialYearList(), 200
+
+#######################################################################################
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -92,12 +104,21 @@ def addStandardData():
 @app.route("/fetchAllStandardData", methods = ["GET","POST"])
 def fetchAllStandardData():
     print("Fetching Data")
-    filterBy = request.json.get("filterBy", None)
-    filterRange = request.json.get("filterRange", [])
+
+    filterOptions = request.json.get("filterOptions", {
+        "filterBy": None,
+        "filterRange": None,
+        "filterFY": None,
+        "filterQuarter": None,
+        "defaultFiltering": None
+    })
+
+    print(filterOptions)
+
     targetTableClass = request.json.get("targetTableClass", None)
     # print(product)
 
-    response = fetchDataFromStandardTable(filterBy, filterRange, targetTableClass)
+    response = fetchDataFromStandardTable(filterOptions, targetTableClass)
     
     return(response)
 

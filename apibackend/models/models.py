@@ -19,20 +19,21 @@ class StandardInterface(db.Model):
 
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
     fileName = db.Column(db.String(200), nullable=True)
-    fileDate = db.Column(db.DateTime, nullable=True)
-    weekStarts = db.Column(db.DateTime, nullable=True)
-    weekEnds = db.Column(db.DateTime, nullable=True)
-    month = db.Column(db.DateTime, nullable=True)
+    fileDate = db.Column(db.DateTime(timezone=True), nullable=True)
+    weekStarts = db.Column(db.DateTime(timezone=True), nullable=True)
+    weekEnds = db.Column(db.DateTime(timezone=True), nullable=True)
+    month = db.Column(db.DateTime(timezone=True), nullable=True)
     quarter = db.Column(db.String(10), nullable=True)
-    year = db.Column(db.DateTime, nullable=True)
+    year = db.Column(db.DateTime(timezone=True), nullable=True)
     fy = db.Column(db.String(10), nullable=True)
-    fileDateFrom = db.Column(db.DateTime, nullable=True)
-    fileDateTo = db.Column(db.DateTime, nullable=True)
-    uploadedOn = db.Column(db.DateTime, nullable=True)
+    fileDateFrom = db.Column(db.DateTime(timezone=True), nullable=True)
+    fileDateTo = db.Column(db.DateTime(timezone=True), nullable=True)
+    uploadedOn = db.Column(db.DateTime(timezone=True), nullable=True)
     uploadedBy = db.Column(db.String(100), nullable=True)
-    actualUploadDate = db.Column(db.DateTime, nullable=True)
-    startDateToFilter = db.Column(db.DateTime, nullable=True)
-    endDateToFilter = db.Column(db.DateTime, nullable=True)
+    actualUploadDate = db.Column(db.DateTime(timezone=True), nullable=True)
+    lastUpdatedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    startDateToFilter = db.Column(db.DateTime(timezone=True), nullable=True)
+    endDateToFilter = db.Column(db.DateTime(timezone=True), nullable=True)
     size = db.Column(db.String(30), nullable = True)
     filePath = db.Column(db.String(200), nullable=True)
     isMigrated = db.Column(db.Boolean, nullable=True)
@@ -73,8 +74,7 @@ class PeakHour(StandardInterface):
     @classmethod
     def get_write_permissions(cls):
         return ["SO_ADMIN", "SUPER_ADMIN"]
-
-
+    
 # class Test(db.Model):
 #     __tablename__ = 'Tests'
 #     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
