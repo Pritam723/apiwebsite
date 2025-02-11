@@ -15,9 +15,13 @@ def create_token(user_id, password):
         print("No user matches. Returning 401")
         return jsonify({"msg": "Bad username or password"}), 401
 
-    customIdentity = {"user_id": user_id, "department": "IT", "eid" : "00091", "name" : "Pritam Dutta", "email" : "pritam.dutta@grid-india.in", "organization" : "ERLDC GRID-INDIA"}
+    customIdentity = user_id
     # additional_claims = {"aud": "some_audience", "foo": "bar"}
-    additional_claims = {}
+    user_data = {"user_id": user_id, "department": "IT", "eid" : "00091", "name" : "Pritam Dutta", 
+                 "email" : "pritam.dutta@grid-india.in", "organization" : "ERLDC GRID-INDIA", "roles" : ["SO_ADMIN", "IT_ADMIN"]}
+                 
+    additional_claims = {"user_info" : user_data}
+
     access_token = create_access_token(identity=customIdentity, additional_claims=additional_claims)
     refresh_token = create_refresh_token(identity=customIdentity)
 

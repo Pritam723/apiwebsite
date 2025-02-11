@@ -70,10 +70,10 @@ class PeakHour(StandardInterface):
 
     @classmethod
     def get_read_permissions(cls):
-        return ["ALL"]
+        return ["SO_ADMIN"]
     @classmethod
     def get_write_permissions(cls):
-        return ["SO_ADMIN", "SUPER_ADMIN"]
+        return ["SO_ADMIN"]
     
 # class Test(db.Model):
 #     __tablename__ = 'Tests'

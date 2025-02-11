@@ -1,7 +1,9 @@
 from flask import Flask, request
 from flask_jwt_extended import JWTManager
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
+
+
 
 from flask_cors import CORS
 from datetime import timedelta
@@ -12,11 +14,13 @@ from dotenv import load_dotenv
 
 # Imports from other modules.
 from auth import authentication
-from standardInterface.standardUploadInterface import addDataToStandardTable
-from standardInterface.standardQueryInterface import fetchDataFromStandardTable
+from standardInterface.standardUploadInterface import dataToStandardTable
+from standardInterface.standardDeleteInterface import deleteFromStandardTable
+from standardInterface.standardQueryInterface import fetchDataFromStandardTable, downloadFromStandardTable
 from standardInterface.standardInterfaceUtilities import getFinancialYearList
 
 from models.models import db, Task
+from models.modelUtilities import fetchPageMetaData
 
 
 # For DB Connection.
@@ -55,8 +59,8 @@ jwt = JWTManager(app)
 
 @app.route('/')
 def hello():
-    print(os.getenv('JWT_KEY'))
-    print(len(os.getenv('JWT_KEY')))
+    # print(os.getenv('JWT_KEY'))
+    # print(len(os.getenv('JWT_KEY')))
     return 'Hello, World!'
 
 
@@ -88,22 +92,49 @@ def refresh():
     token = authentication.refresh_token(identity)
     return token
 
+################################## Operations on Standard Table ########################
+
 @app.route("/addStandardData", methods = ["GET","POST"])
 def addStandardData():
-    print("Adding Data")
+    print("Adding/Updating Data")
 
     product = request.json.get("product", None)
+    uploadPoints = request.json.get("uploadPoints", {})
     files = request.json.get("files", None)
     targetTableClass = request.json.get("targetTableClass", None)
     # print(product)
+    # print(uploadPoints)
 
-    response = addDataToStandardTable(product, files, targetTableClass)
+    response = dataToStandardTable(product, uploadPoints, files, targetTableClass)
     
     return(response)
 
+@app.route("/deleteStandardData", methods = ["GET","POST"])
+def deleteStandardData():
+    print("Deleting Data")
+
+    productIdToDelete = request.json.get("productIdToDelete", None)
+    targetTableClass = request.json.get("targetTableClass", None)
+
+    response = deleteFromStandardTable(productIdToDelete, targetTableClass)
+    
+    return response
+
+@app.route("/downloadStandardData", methods = ["GET", "POST"])
+def downloadStandardData():
+    print("Downloading Data")
+
+    productIdToDownload = request.json.get("productIdToDownload", None)
+    targetTableClass = request.json.get("targetTableClass", None)
+
+    response = downloadFromStandardTable(productIdToDownload, targetTableClass)
+    
+    return response
+
+
 @app.route("/fetchAllStandardData", methods = ["GET","POST"])
 def fetchAllStandardData():
-    print("Fetching Data")
+    # print("Fetching Data")
 
     filterOptions = request.json.get("filterOptions", {
         "filterBy": None,
@@ -113,7 +144,7 @@ def fetchAllStandardData():
         "defaultFiltering": None
     })
 
-    print(filterOptions)
+    # print(filterOptions)
 
     targetTableClass = request.json.get("targetTableClass", None)
     # print(product)
@@ -123,6 +154,29 @@ def fetchAllStandardData():
     return(response)
 
 
+@app.route("/fetchStandardPageMetaData", methods = ["GET","POST"])
+@jwt_required(optional=True)
+def fetchStandardPageMetaData():
+    current_user = get_jwt_identity()
+    targetTableClass = request.json.get("targetTableClass", None)
+   
+    return fetchPageMetaData(current_user, targetTableClass)
+
+    # if current_user:
+    #     print(current_user)
+    #     print("1 token")
+    #     # Get additional claims
+    #     claims = get_jwt()
+    #     user_info = claims.get("user_info", {})
+
+    #     print(user_info)
+    # else:
+    #     print("No token")
+
+    # return "Hi"
+
+
+########################################################################################
 
 # main driver function
 if __name__ == '__main__':

@@ -1,7 +1,11 @@
 from datetime import  datetime, timedelta
-from enum import Enum
+# from enum import Enum
 import pandas as pd
 import pytz
+import base64
+from codecs import encode
+import os
+
 
 DEFAULT_FILTERS = {
     "NONE" : None, # No filtering, will fetch all data.
@@ -82,7 +86,7 @@ def formatDateWithSuffix(dt):
     return f"{day}{suffix} {dt.strftime('%B %Y')}"
 
 
-def preprocessData(product):
+def preprocessDataBeforeAddition(product, uploadPoints):
 
     # It expects a product object like following:
     # {'id': None,
@@ -96,7 +100,6 @@ def preprocessData(product):
     # 'fileDateFromTo': ['2025-02-19T18:30:00.000Z', None],
     # 'uploadedOn': '2025-02-04T18:30:00.000Z',
     # 'uploadedBy': None,
-    # 'actualUploadDate': None,
     # 'attachedFiles': None,
     # 'size': 0
     # }
@@ -110,6 +113,11 @@ def preprocessData(product):
     
     timeNow = datetime.today()
     timeNow = timeNow.replace(microsecond=0)
+
+    IST = pytz.timezone("Asia/Kolkata")
+    # Localize the naive datetime to IST
+    timeNow = IST.localize(timeNow)
+
     startDateObj = timeNow
     endDateObj = timeNow
     
@@ -121,7 +129,7 @@ def preprocessData(product):
     fy = product.get("fy", None)
     fileDateFromTo = product.get("fileDateFromTo", None)
     uploadedOn = product.get("uploadedOn", None)
-    # actualUploadDate = product.get("actualUploadDate", None)
+    actualUploadDate = product.get("actualUploadDate", None)
     
     # print(uploadedOn)
 
@@ -192,8 +200,14 @@ def preprocessData(product):
     else:
         product["uploadedOn"] = timeNow
     
+    # if(actualUploadDate):
+    #     product["actualUploadDate"] = jsDateStrToTimeZoneAwareDate(actualUploadDate)
+    # else:
+    #     product["actualUploadDate"] = timeNow
+
     product["actualUploadDate"] = timeNow
     
+    # It will always be this only. # Always update this one.
     product["lastUpdatedOn"] = timeNow
     
     # We don't want these following 2 to be saved in DB.
@@ -225,6 +239,176 @@ def preprocessData(product):
 
     # See how few attributes are changed for better filtering/sorting of data.
     
+
+def preprocessDataBeforeUpdate(product, uploadPoints):
+
+    # It expects a product object like following:
+    # {'id': None,
+    # 'fileName': None,
+    # 'fileDate': '2025-02-04T18:30:00.000Z',
+    # 'weekStartsEnds': ['2025-02-18T18:30:00.000Z', '2025-02-21T18:30:00.000Z'],
+    # 'month': '2025-01-31T18:30:00.000Z',
+    # 'quarter': 'Q3',
+    # 'year': '2023-12-31T18:30:00.000Z',
+    # 'fy': '2024-25',
+    # 'fileDateFromTo': ['2025-02-19T18:30:00.000Z', None],
+    # 'uploadedOn': '2025-02-04T18:30:00.000Z',
+    # 'uploadedBy': None,
+    # 'attachedFiles': None,
+    # 'size': 0
+    # }
+
+    # Expects uploadPoints: {'fileDate': True, 'uploadedOn': True}
+
+    #commonTableDataPoints = ["id","fileName","fileDate","weekStartsEnds","month","quarter","year","fy","fileDateFromTo","uploadedOn","uploadedBy","actualUploadDate","size"]
+    # datePoints = ["fileDate","weekStartsEnds","month","quarter","year","fy","fileDateFromTo","uploadedOn","actualUploadDate"]
+    # See all the dataPoints in itself are self sufficient, apart from the Quarter Data. Quarter Data must be coupled with Financial Year.
+    # uploadedOn and actualUploadDate are not depending on anything. By default value is datetime.now()
+    # So, all should stay as single unit apart from Quarter and Year.
+    # Careful about fy, it is coming as string '2023-24'
+    
+    timeNow = datetime.today()
+    timeNow = timeNow.replace(microsecond=0)
+
+    IST = pytz.timezone("Asia/Kolkata")
+    # Localize the naive datetime to IST
+    timeNow = IST.localize(timeNow)
+
+    startDateObj = timeNow
+    endDateObj = timeNow
+    
+    if(uploadPoints.get("fileDate", True)):
+        fileDate = product.get("fileDate", None)
+    else:
+        fileDate = None
+    if(uploadPoints.get("weekStartsEnds", True)):
+        weekStartsEnds = product.get("weekStartsEnds", None)
+    else:
+        weekStartsEnds = None
+    if(uploadPoints.get("month", True)):
+        month = product.get("month", None)
+    else:
+        month = None    
+    if(uploadPoints.get("quarter", True)):
+        quarter = product.get("quarter", None)
+    else:
+        quarter = None   
+    if(uploadPoints.get("year", True)):
+        year = product.get("year", None)
+    else:
+        year = None   
+    if(uploadPoints.get("fy", True)):
+        fy = product.get("fy", None)
+    else:
+        fy = None   
+    if(uploadPoints.get("fileDateFromTo", True)):
+        fileDateFromTo = product.get("fileDateFromTo", None)
+    else:
+        fileDateFromTo = None 
+    if(uploadPoints.get("uploadedOn", True)):
+        uploadedOn = product.get("uploadedOn", None)
+    else:
+        uploadedOn = None
+    
+    if(fileDate):
+        startDateObj = jsDateStrToTimeZoneAwareDate(fileDate)
+        print(startDateObj)
+
+        print(pd.to_datetime(fileDate))
+
+        endDateObj = startDateObj  
+    elif(weekStartsEnds):
+        startDateObj = jsDateStrToTimeZoneAwareDate(weekStartsEnds[0])
+        endDateObj = jsDateStrToTimeZoneAwareDate(weekStartsEnds[1])
+    elif(month):
+        dateObj = jsDateStrToTimeZoneAwareDate(month)
+        startDateObj = getFirstDayOfMonth(dateObj)
+        endDateObj = getFirstDayOfMonth(dateObj)
+    elif(quarter and fy):
+        quarterInfos = {
+            "Q1": [0, (4, 1), (6,30)],
+            "Q2": [0, (7, 1), (9, 30)],
+            "Q3": [0, (10, 1), (12, 31)],
+            "Q4": [1, (1, 1), (3, 31)]
+        }
+        quarterInfo = quarterInfos[quarter]
+        startYear = int(fy.split('-')[0])
+        # endYear = int(fy.split('-')[1])
+        
+        startDateObj = datetime(startYear + quarterInfo[0] ,quarterInfo[1][0], quarterInfo[1][1])
+        endDateObj = datetime(startYear + quarterInfo[0] ,quarterInfo[2][0], quarterInfo[2][1])
+        
+    elif(year):
+        dateObj = jsDateStrToTimeZoneAwareDate(year)
+        startDateObj = dateObj.replace(day = 1, month = 1)
+        endDateObj = dateObj.replace(day = 31, month = 12)
+        
+    elif(fy):
+        startYear = int(fy.split('-')[0])
+        endYear = int(fy.split('-')[1])
+        startDateObj = datetime(startYear,4,1)
+        endDateObj = datetime(endYear,3,31)
+    elif(fileDateFromTo):
+        startDateObj = jsDateStrToTimeZoneAwareDate(fileDateFromTo[0])
+        endDateObj = jsDateStrToTimeZoneAwareDate(fileDateFromTo[1])
+        
+    product['startDateToFilter'] = startDateObj
+    product['endDateToFilter'] = endDateObj
+    
+    product['weekStarts'] = startDateObj
+    product['weekEnds'] = endDateObj
+    
+    product['fileDateFrom'] = startDateObj
+    product['fileDateTo'] = endDateObj
+    
+    
+    product["fileDate"] = startDateObj
+    product["month"] = startDateObj
+    product["year"] = startDateObj
+    
+    
+    product["fy"] = getFinancialYear(startDateObj)
+    product["quarter"] = getQuarter(startDateObj)
+
+    if(uploadedOn):
+        product["uploadedOn"] = jsDateStrToTimeZoneAwareDate(uploadedOn)
+    else:
+        product["uploadedOn"] = timeNow
+    
+    # It will always be this only. # Always update this one.
+    product["lastUpdatedOn"] = timeNow
+    
+    # We don't want these following 2 to be saved in DB.
+    product.pop('weekStartsEnds', None)
+    product.pop('fileDateFromTo', None)
+    product.pop('attachedFiles', None)
+    
+    # print(product)
+    # print("Done")
+
+    # The final product will look like:
+    # {'id': None,
+    # 'fileName': None,
+    # 'fileDate': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'month': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'quarter': 'Q3',
+    # 'year': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'fy': '2024-25',
+    # 'uploadedOn': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'uploadedBy': None,
+    # 'actualUploadDate': datetime.datetime(2025, 2, 5, 20, 31, 41),
+    # 'size': 0,
+    # 'startDateToFilter': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'endDateToFilter': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'weekStarts': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'weekEnds': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'fileDateFrom': datetime.datetime(2025, 2, 4, 18, 30),
+    # 'fileDateTo': datetime.datetime(2025, 2, 4, 18, 30)}
+
+    # See how few attributes are changed for better filtering/sorting of data.
+
+
+
 def getQueryRange(filterOptions):
     # filterOptions looks like:
     # {'filterBy': 'Date Range', 'filterRange': None or [None, None], 'filterFY': None, 'filterQuarter': None, 'defaultFiltering': 'CURRENT_YEAR'}
@@ -376,4 +560,25 @@ def getQueryRange(filterOptions):
         
 
 
+# Useful while Saving data to FileSystem.
+def saveWithUniqueName(uploadFolder, file):
+    os.makedirs(uploadFolder, exist_ok=True)
+    fileName = file["fileName"]
+    base, ext = os.path.splitext(fileName)  # Split filename and extension
+    filepath = os.path.join(uploadFolder, fileName)
+    counter = 1
+    print(filepath)
 
+    # Check if file exists and generate a unique name
+    while os.path.exists(filepath):
+        filepath = os.path.join(uploadFolder, f"{base} ({counter}){ext}")
+        counter += 1
+
+    base64_str = file["base64Data"].split(';base64')[1] # No need to worry ';' is not a valid base64 Character.
+    bytes_obj = encode(base64_str, 'utf-8')
+    binary_obj = base64.decodebytes(bytes_obj)
+
+    with open(filepath, "wb") as fh:
+        fh.write(binary_obj)
+
+    return os.path.basename(filepath)  # Return saved file name
