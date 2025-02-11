@@ -1,9 +1,11 @@
 from flask import jsonify, current_app as app
 from .standardInterfaceUtilities import preprocessDataBeforeAddition,preprocessDataBeforeUpdate, saveWithUniqueName
-from datetime import datetime
-from models.models import db,Task, PeakHour
+# from datetime import datetime
+from models.models import db, getModelClass
+from auth.authUtilities import getPermissionFlags 
+from flask_jwt_extended import get_jwt
 
-def addDataToStandardTable(product, uploadPoints, files, targetTableClass):
+def addDataToStandardTable(product, uploadPoints, files, TableClass):
     preprocessDataBeforeAddition(product, uploadPoints)
     print("Data Preprocessed before addition")
     # print(product)
@@ -17,7 +19,7 @@ def addDataToStandardTable(product, uploadPoints, files, targetTableClass):
 
     # print("Path to upload: ")
     # print(os.getcwd())
-    uploadPath = eval(targetTableClass).get_upload_path()
+    uploadPath = TableClass.get_upload_path()
     uploadFolder = app.config['UPLOAD_FOLDER'] + uploadPath
     for file in files:
         # print(file)
@@ -41,7 +43,7 @@ def addDataToStandardTable(product, uploadPoints, files, targetTableClass):
         product["filePath"] = f"{uploadPath}\{newFileName}"
 
         # print(product)
-        product_to_add = eval(targetTableClass)(**product)
+        product_to_add = TableClass(**product)
         products_to_add.append(product_to_add)
 
     # Add all products to the session
@@ -66,7 +68,7 @@ def addDataToStandardTable(product, uploadPoints, files, targetTableClass):
 
     return jsonify(jsonData), 200
 
-def updateDataToStandardTable(product, uploadPoints, files, targetTableClass):
+def updateDataToStandardTable(product, uploadPoints, files, TableClass):
     
     preprocessDataBeforeUpdate(product, uploadPoints)
     print("Data Preprocessed before updation")
@@ -82,13 +84,13 @@ def updateDataToStandardTable(product, uploadPoints, files, targetTableClass):
     # print(product.get("id"))
     
     
-    uploadPath = eval(targetTableClass).get_upload_path()
+    uploadPath = TableClass.get_upload_path()
     uploadFolder = app.config['UPLOAD_FOLDER'] + uploadPath
 
 
-    old_product = eval(targetTableClass).query.get(product["id"])  # Fetch entry by ID
+    old_product = TableClass.query.get(product["id"])  # Fetch entry by ID
     if old_product is None:
-        raise Exception("Could not able to find the Item!!")
+        raise Exception({"message" : "Could not able to find the Item!!", "summary" : "Something went wrong", "status" : 500})
 
     # First change the parameters of old_product with the new_product. Do not
     # Change the ID obviously. Also after this do not forget to add the file
@@ -145,13 +147,15 @@ def updateDataToStandardTable(product, uploadPoints, files, targetTableClass):
     return jsonify(jsonData), 200
 
 
-def dataToStandardTable(product, uploadPoints, files, targetTableClass):
+def dataToStandardTable(current_user, product, uploadPoints, files, targetTableClass):
     # Database Logic to add data in Database.
     try:
 
         if(not (product and files and targetTableClass)):
-            raise Exception("Insufficient Data Sent from Client!!")
+            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
 
+
+        TableClass = getModelClass(targetTableClass)
 
         # write_premissions = eval(targetTableClass).get_write_permissions()
         # print(write_premissions)
@@ -160,22 +164,46 @@ def dataToStandardTable(product, uploadPoints, files, targetTableClass):
 
         # print(product.get("id"))
 
+        #########################   Check Read-Write Permissions ###################################################
+        readPermission = False
+        writePermission = False
+
+
+        allowedWriteRoles = TableClass.get_write_permissions()
+        allowedReadRoles = TableClass.get_read_permissions()
+        # print(allowedWriteRoles)
+
+        user_info = {}
+        if current_user:
+            # Get additional claims
+            claims = get_jwt()
+            user_info = claims.get("user_info", {})
+
+        readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
+
+        if(writePermission == False):
+            raise Exception({"message" : "You do not have permission to perform the action!!", "summary" : "Something went wrong", "status" :403})
+
+        #############################################################################################################
+
+
         if(product.get("id") is None):
             print("Adding Data")
-            return addDataToStandardTable(product, uploadPoints, files, targetTableClass)
+            return addDataToStandardTable(product, uploadPoints, files, TableClass)
         else:
             print("Updating Data")
-            return updateDataToStandardTable(product, uploadPoints, files, targetTableClass)
+            return updateDataToStandardTable(product, uploadPoints, files, TableClass)
     
     except Exception as e:
-        # print(e)
+  
+        error_dict = e.args[0]
 
         jsonData = {
             "success": False,
             "type": "error",
-            "summary":"Something went wrong",
-            "message": "An error occurred while uploading.",
-            "error": str(e)
+            "summary": error_dict["summary"],
+            "message": error_dict["message"],
+            "error": error_dict["message"]
         }
 
-        return jsonify(jsonData), 500
+        return jsonify(jsonData), error_dict["status"]

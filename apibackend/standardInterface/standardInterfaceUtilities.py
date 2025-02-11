@@ -148,6 +148,7 @@ def preprocessDataBeforeAddition(product, uploadPoints):
         dateObj = jsDateStrToTimeZoneAwareDate(month)
         startDateObj = getFirstDayOfMonth(dateObj)
         endDateObj = getFirstDayOfMonth(dateObj)
+    
     elif(quarter and fy):
         quarterInfos = {
             "Q1": [0, (4, 1), (6,30)],
@@ -172,6 +173,7 @@ def preprocessDataBeforeAddition(product, uploadPoints):
         endYear = int(fy.split('-')[1])
         startDateObj = datetime(startYear,4,1)
         endDateObj = datetime(endYear,3,31)
+    
     elif(fileDateFromTo):
         startDateObj = jsDateStrToTimeZoneAwareDate(fileDateFromTo[0])
         endDateObj = jsDateStrToTimeZoneAwareDate(fileDateFromTo[1])

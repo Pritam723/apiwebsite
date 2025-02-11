@@ -4,6 +4,10 @@ from .modelUtilities import getJSCompatibleTimeStamp
 
 db = SQLAlchemy()
 
+def getModelClass(targetTableClass):
+    return eval(targetTableClass)
+
+
 class Task(db.Model):
     __tablename__ = 'Tasks'
     
@@ -80,3 +84,4 @@ class PeakHour(StandardInterface):
 #     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 #     title = db.Column(db.String(200), nullable=False)
 #     done = db.Column(db.Boolean, nullable=False)
+

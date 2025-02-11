@@ -1,21 +1,55 @@
 from flask import jsonify, send_file, current_app as app
 from datetime import datetime
-from models.models import db,Task, PeakHour
+from models.models import getModelClass
 import os
 from .standardInterfaceUtilities import getQueryRange, formatDateWithSuffix
+from auth.authUtilities import getPermissionFlags 
+from flask_jwt_extended import get_jwt
 
-def downloadFromStandardTable(productIdToDownload, targetTableClass):
-    print(productIdToDownload, targetTableClass)
+def downloadFromStandardTable(current_user, productIdToDownload, targetTableClass):
+    # print(productIdToDownload, targetTableClass)
     try:
         # m = 0/0 # Generating Error
         if((not targetTableClass) or (not productIdToDownload)):
-            raise Exception("Insufficient Data Sent from Client!!")
+            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
         
-        product = eval(targetTableClass).query.filter_by(id=productIdToDownload).first()
+
+        TableClass = getModelClass(targetTableClass)
+
+
+
+        #########################   Check Read-Write Permissions ###################################################
+        readPermission = False
+        writePermission = False
+
+        allowedWriteRoles = TableClass.get_write_permissions()
+        allowedReadRoles = TableClass.get_read_permissions()
+        # print(allowedWriteRoles)
+
+        user_info = {}
+        if current_user:
+            # Get additional claims
+            claims = get_jwt()
+            user_info = claims.get("user_info", {})
+
+            print(claims)
+
+        readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
+
+        print(allowedReadRoles)
+        print(user_info)
+
+
+        if(readPermission == False):
+            raise Exception({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 403})
+
+        #############################################################################################################
+
+
+        product = TableClass.query.filter_by(id=productIdToDownload).first()
         
         if not product:
-            raise Exception("Entry not found!!")
-      
+            raise Exception({"message" : "Entry not found!!", "summary" : "Something went wrong", "status" : 500})
 
         uploadPath = app.config['UPLOAD_FOLDER'] + product.filePath
         print(uploadPath)
@@ -23,19 +57,22 @@ def downloadFromStandardTable(productIdToDownload, targetTableClass):
         return send_file(uploadPath, as_attachment=True)
 
     except Exception as e:
-        print(e)
+  
+        error_dict = e.args[0]
 
         jsonData = {
             "success": False,
             "type": "error",
-            "summary":"Something went wrong",
-            "message": "An error occurred while deleting data.",
-            "error": str(e)
+            "summary": error_dict["summary"],
+            "message": error_dict["message"],
+            "error": error_dict["message"]
         }
 
-        return jsonify(jsonData), 500
+        return jsonify(jsonData), error_dict["status"]
 
-def fetchDataFromStandardTable(filterOptions, targetTableClass):
+
+
+def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
     
     # filterOptions looks like:
     # {'filterBy': 'Date Range', 'filterRange': None or [None, None], 'filterFY': None, 'filterQuarter': None, 'defaultFiltering': 'CURRENT_YEAR'}
@@ -43,23 +80,46 @@ def fetchDataFromStandardTable(filterOptions, targetTableClass):
     try:
         # m = 0/0 # Generating Error
         if(not targetTableClass):
-            raise Exception("Insufficient Data Sent from Client!!")
+            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
+
+        TableClass = getModelClass(targetTableClass)
+
+        #########################   Check Read-Write Permissions ###################################################
+        readPermission = False
+        writePermission = False
+
+
+        allowedWriteRoles = TableClass.get_write_permissions()
+        allowedReadRoles = TableClass.get_read_permissions()
+        # print(allowedWriteRoles)
+
+        user_info = {}
+        if current_user:
+            # Get additional claims
+            claims = get_jwt()
+            user_info = claims.get("user_info", {})
+
+        readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
+
+        if(readPermission == False):
+            raise Exception({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 500})
+        #############################################################################################################
+
 
         queryStartDateObj, queryEndDateObj = getQueryRange(filterOptions)
-
         # print(queryStartDateObj, queryEndDateObj)
         dataInfo = ""
         if((queryStartDateObj is None) or (queryEndDateObj is None)):
             # Fetch all data. No filtering.
-            products = eval(targetTableClass).query\
-                .order_by(eval(targetTableClass).fileDate.desc())\
+            products = TableClass.query\
+                .order_by(TableClass.fileDate.desc())\
                     .all()
         else:
             # Apply Filters here based on queryStartDateObj, queryEndDateObj.
             # Actually the way we have stored the data, we can simply compare with TableName.startDateToFilter
-            products = eval(targetTableClass).query.filter(eval(targetTableClass)\
+            products = TableClass.query.filter(TableClass\
                                 .startDateToFilter.between(queryStartDateObj, queryEndDateObj))\
-                                        .order_by(eval(targetTableClass).fileDate.desc())\
+                                        .order_by(TableClass.fileDate.desc())\
                                             .all()
             # dataInfo = f"Showing Data From {queryStartDateObj.strftime('%d-%m-%Y')} to {queryEndDateObj.strftime('%d-%m-%Y')}."
             
@@ -87,14 +147,15 @@ def fetchDataFromStandardTable(filterOptions, targetTableClass):
 
     
     except Exception as e:
-        print(e)
+  
+        error_dict = e.args[0]
 
         jsonData = {
             "success": False,
             "type": "error",
-            "summary":"Something went wrong",
-            "message": "An error occurred while fetching data.",
-            "error": str(e)
+            "summary": error_dict["summary"],
+            "message": error_dict["message"],
+            "error": error_dict["message"]
         }
 
-        return jsonify(jsonData), 500
+        return jsonify(jsonData), error_dict["status"]

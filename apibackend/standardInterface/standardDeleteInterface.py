@@ -1,14 +1,38 @@
 from flask import jsonify, current_app as app
-from models.models import db, PeakHour
+from models.models import db, getModelClass
+from auth.authUtilities import getPermissionFlags 
+from flask_jwt_extended import get_jwt
 
-
-def deleteFromStandardTable(productIdToDelete, targetTableClass):
+def deleteFromStandardTable(current_user, productIdToDelete, targetTableClass):
     try:
         # m = 0/0 # Generating Error
         if((not targetTableClass) or (not productIdToDelete)):
-            raise Exception("Insufficient Data Sent from Client!!")
+            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
+
+        TableClass = getModelClass(targetTableClass)
+
+        #########################   Check Read-Write Permissions ###################################################
+        readPermission = False
+        writePermission = False
+
+
+        allowedWriteRoles = TableClass.get_write_permissions()
+        allowedReadRoles = TableClass.get_read_permissions()
+        # print(allowedWriteRoles)
+
+        user_info = {}
+        if current_user:
+            # Get additional claims
+            claims = get_jwt()
+            user_info = claims.get("user_info", {})
+
+        readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
+
+        if(writePermission == False):
+            raise Exception({"message" : "You do not have permission to perform the action!!", "summary" : "Something went wrong", "status" : 403})
+        #############################################################################################################
         
-        product = eval(targetTableClass).query.filter_by(id=productIdToDelete).first()
+        product = TableClass.query.filter_by(id=productIdToDelete).first()
         if product:
             db.session.delete(product)
             db.session.commit()
@@ -30,15 +54,17 @@ def deleteFromStandardTable(productIdToDelete, targetTableClass):
 
         return jsonify(jsonData), 200
 
+
     except Exception as e:
-        print(e)
+  
+        error_dict = e.args[0]
 
         jsonData = {
             "success": False,
             "type": "error",
-            "summary":"Something went wrong",
-            "message": "An error occurred while deleting data.",
-            "error": str(e)
+            "summary": error_dict["summary"],
+            "message": error_dict["message"],
+            "error": error_dict["message"]
         }
 
-        return jsonify(jsonData), 500
+        return jsonify(jsonData), error_dict["status"]

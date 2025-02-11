@@ -1,4 +1,4 @@
-from flask_jwt_extended import jwt_required, get_jwt
+from flask_jwt_extended import get_jwt
 from flask import jsonify
 from auth.authUtilities import getPermissionFlags 
 # from models.models import PeakHour
@@ -9,15 +9,18 @@ def getJSCompatibleTimeStamp(dt):
 
 def fetchPageMetaData(current_user, targetTableClass):
     try:
+        # m = 0/0 # Generating Exception.
         if(targetTableClass is None):
-            raise Exception("Insufficient Data Sent from Client!!")
+            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
 
         readPermission = False
         writePermission = False
 
-        from .models import PeakHour # Lazy Import.
-        allowedWriteRoles = eval(targetTableClass).get_write_permissions()
-        allowedReadRoles = eval(targetTableClass).get_read_permissions()
+        from .models import getModelClass # Lazy Import.
+        TableClass = getModelClass(targetTableClass)
+
+        allowedWriteRoles = TableClass.get_write_permissions()
+        allowedReadRoles = TableClass.get_read_permissions()
         # print(allowedWriteRoles)
 
         user_info = {}
@@ -46,14 +49,14 @@ def fetchPageMetaData(current_user, targetTableClass):
         return jsonify(jsonData), 200
 
     except Exception as e:
-        print(e)
+        error_dict = e.args[0]
 
         jsonData = {
             "success": False,
             "type": "error",
-            "summary":"Something went wrong",
-            "message": "An error occurred while fetching data.",
-            "error": str(e)
+            "summary": error_dict["summary"],
+            "message": error_dict["message"],
+            "error": error_dict["message"]
         }
 
-        return jsonify(jsonData), 500
+        return jsonify(jsonData), error_dict["status"]

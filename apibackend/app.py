@@ -47,7 +47,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
 # CORS(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
+# CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
+
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "http://10.3.101.179:3001"]}})
+
 
 # Setup the Flask-JWT-Extended extension
 app.config["JWT_SECRET_KEY"] = os.getenv('JWT_KEY')
@@ -95,8 +98,10 @@ def refresh():
 ################################## Operations on Standard Table ########################
 
 @app.route("/addStandardData", methods = ["GET","POST"])
+@jwt_required()
 def addStandardData():
     print("Adding/Updating Data")
+    current_user = get_jwt_identity()
 
     product = request.json.get("product", None)
     uploadPoints = request.json.get("uploadPoints", {})
@@ -105,36 +110,42 @@ def addStandardData():
     # print(product)
     # print(uploadPoints)
 
-    response = dataToStandardTable(product, uploadPoints, files, targetTableClass)
+    response = dataToStandardTable(current_user, product, uploadPoints, files, targetTableClass)
     
     return(response)
 
 @app.route("/deleteStandardData", methods = ["GET","POST"])
+@jwt_required()
 def deleteStandardData():
     print("Deleting Data")
+    current_user = get_jwt_identity()
 
     productIdToDelete = request.json.get("productIdToDelete", None)
     targetTableClass = request.json.get("targetTableClass", None)
 
-    response = deleteFromStandardTable(productIdToDelete, targetTableClass)
+    response = deleteFromStandardTable(current_user, productIdToDelete, targetTableClass)
     
     return response
 
 @app.route("/downloadStandardData", methods = ["GET", "POST"])
+@jwt_required(optional=True)
 def downloadStandardData():
     print("Downloading Data")
+    current_user = get_jwt_identity()
 
     productIdToDownload = request.json.get("productIdToDownload", None)
     targetTableClass = request.json.get("targetTableClass", None)
 
-    response = downloadFromStandardTable(productIdToDownload, targetTableClass)
+    response = downloadFromStandardTable(current_user, productIdToDownload, targetTableClass)
     
     return response
 
 
 @app.route("/fetchAllStandardData", methods = ["GET","POST"])
+@jwt_required(optional=True)
 def fetchAllStandardData():
-    # print("Fetching Data")
+    print("Fetching Data")
+    current_user = get_jwt_identity()
 
     filterOptions = request.json.get("filterOptions", {
         "filterBy": None,
@@ -149,7 +160,7 @@ def fetchAllStandardData():
     targetTableClass = request.json.get("targetTableClass", None)
     # print(product)
 
-    response = fetchDataFromStandardTable(filterOptions, targetTableClass)
+    response = fetchDataFromStandardTable(current_user, filterOptions, targetTableClass)
     
     return(response)
 
@@ -161,19 +172,6 @@ def fetchStandardPageMetaData():
     targetTableClass = request.json.get("targetTableClass", None)
    
     return fetchPageMetaData(current_user, targetTableClass)
-
-    # if current_user:
-    #     print(current_user)
-    #     print("1 token")
-    #     # Get additional claims
-    #     claims = get_jwt()
-    #     user_info = claims.get("user_info", {})
-
-    #     print(user_info)
-    # else:
-    #     print("No token")
-
-    # return "Hi"
 
 
 ########################################################################################
