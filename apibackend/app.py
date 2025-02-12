@@ -19,12 +19,12 @@ from standardInterface.standardDeleteInterface import deleteFromStandardTable
 from standardInterface.standardQueryInterface import fetchDataFromStandardTable, downloadFromStandardTable
 from standardInterface.standardInterfaceUtilities import getFinancialYearList
 
-from models.models import db, Task
+from models.models import db
 from models.modelUtilities import fetchPageMetaData
 
 
 # For DB Connection.
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
