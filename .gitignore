@@ -1,5 +1,7 @@
 .apivenv/
 /.apivenv
+apivenv/
+/apivenv
 .env
 /.env
 apibackend/.env
