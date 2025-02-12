@@ -7,6 +7,8 @@ from codecs import encode
 import os
 
 
+################################# USE THESE AS ENUMS ############################################################
+
 DEFAULT_FILTERS = {
     "NONE" : None, # No filtering, will fetch all data.
     "LAST_ONE_YEAR" : "LAST_ONE_YEAR", # Will Filter Data for last 1-year ending today.
@@ -16,10 +18,31 @@ DEFAULT_FILTERS = {
     "CURRENT_MONTH" : "CURRENT_MONTH" # Will Filter Data for current month. current month = today.month().
 }
 
+MULTIPLE_UPLOADS = {
+    "TRUE": True,
+    "FALSE" : False
+}
+
+
+UPLOAD_POINTS_CHOICE = {
+    "FILE_DATE" : { "fileDate": True},
+    "WEEK_STARTS_ENDS" : { "weekStartsEnds": True},
+    "MONTH": {"month" : True},
+    "YEAR": {"year": True},
+    "FY": {"fy": True},
+    "FYQ": {"fy": True, "quarter": True},
+    "FILE_DATE_FROM_TO" : {"fileDateFromTo": True}
+}
+
+CUSTOM_UPLOADED_ON = {
+    "TRUE": True,
+    "FALSE" : False
+}
 
 # commonTableDataPoints = ["id","fileName","fileDate","weekStartsEnds","month","quarter","year","fy","fileDateFromTo","uploadedOn","uploadedBy","actualUploadDate","size"]
 # datePoints = ["fileDate","weekStartsEnds","month","quarter","year","fy","fileDateFromTo","uploadedOn","actualUploadDate"]
 
+#################################################################################################################
 
 def jsDateStrToTimeZoneAwareDate(fileDate):
     

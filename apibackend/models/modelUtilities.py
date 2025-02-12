@@ -21,6 +21,18 @@ def fetchPageMetaData(current_user, targetTableClass):
 
         allowedWriteRoles = TableClass.get_write_permissions()
         allowedReadRoles = TableClass.get_read_permissions()
+
+        multipleUploads = TableClass.get_multiple_upload_flag()
+
+        uploadPoints = TableClass.get_upload_points()
+        custom_uploaded_on_flag = TableClass.get_custom_uploaded_on_flag()
+        uploadPoints["uploadedOn"] = custom_uploaded_on_flag
+
+        dataToDisplay = TableClass.get_data_to_display()
+        sortInUse = TableClass.get_sort_in_use()
+        filtersInUse = TableClass.get_filters_in_use()
+        defaultFilterning = TableClass.get_default_filter()
+
         # print(allowedWriteRoles)
 
         user_info = {}
@@ -32,9 +44,21 @@ def fetchPageMetaData(current_user, targetTableClass):
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
 
-        data = {
+        dynamicMetaData = {
             "readPermission": readPermission,
-            "writePermission": writePermission,            
+            "writePermission": writePermission,
+            "multipleUploads": multipleUploads,
+            "uploadPoints": uploadPoints,
+            "dataToDisplay": dataToDisplay,
+            "sortInUse": sortInUse,
+            "filtersInUse": filtersInUse,
+            "defaultFiltering": defaultFilterning,
+        }
+
+
+
+        data = {
+            "dynamicMetaData" : dynamicMetaData          
         }
 
         jsonData = {
