@@ -21,6 +21,7 @@ from standardInterface.standardInterfaceUtilities import getFinancialYearList
 
 from models.models import db
 from models.modelUtilities import fetchPageMetaData
+from RUN_DB_MIGRATION import runMigration
 
 
 # For DB Connection.
@@ -81,7 +82,7 @@ def login():
     # print("here I am")
     user_id = request.json.get("email", None)
     password = request.json.get("password", None)
-    print(user_id, password)
+    # print(user_id, password)
     token = authentication.create_token(user_id, password)
     # print(token)
     return token
@@ -179,8 +180,7 @@ def fetchStandardPageMetaData():
 # main driver function
 if __name__ == '__main__':
 
-    with app.app_context():
-        db.create_all()
-    print(db.Model)
-
+    # Run Migration only if a new Table is added.
+    runMigration(app, db)
+ 
     app.run(debug = True, port = 4001, host = "0.0.0.0")

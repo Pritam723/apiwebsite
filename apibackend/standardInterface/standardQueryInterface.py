@@ -5,13 +5,16 @@ import os
 from .standardInterfaceUtilities import getQueryRange, formatDateWithSuffix
 from auth.authUtilities import getPermissionFlags 
 from flask_jwt_extended import get_jwt
-import time
+# import time
+from .standardInterfaceUtilities import ResponseException
+
+
 def downloadFromStandardTable(current_user, productIdToDownload, targetTableClass):
     # print(productIdToDownload, targetTableClass)
     try:
         # m = 0/0 # Generating Error
         if((not targetTableClass) or (not productIdToDownload)):
-            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
+            raise ResponseException({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
         
 
         TableClass = getModelClass(targetTableClass)
@@ -41,7 +44,7 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
 
 
         if(readPermission == False):
-            raise Exception({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 403})
+            raise ResponseException({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 403})
 
         #############################################################################################################
 
@@ -49,14 +52,14 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
         product = TableClass.query.filter_by(id=productIdToDownload).first()
         
         if not product:
-            raise Exception({"message" : "Entry not found!!", "summary" : "Something went wrong", "status" : 500})
+            raise ResponseException({"message" : "Entry not found!!", "summary" : "Something went wrong", "status" : 500})
 
         uploadPath = app.config['UPLOAD_FOLDER'] + product.filePath
         print(uploadPath)
         # Validate file existence
         return send_file(uploadPath, as_attachment=True)
 
-    except Exception as e:
+    except ResponseException as e:
   
         error_dict = e.args[0]
 
@@ -69,6 +72,21 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
         }
 
         return jsonify(jsonData), error_dict["status"]
+    
+    except Exception as e:
+
+        # print(e)
+        # print(str(e))
+
+        jsonData = {
+            "success": False,
+            "type": "error",
+            "summary": "Something went wrong",
+            "message": str(e),
+            "error": "Unknown Exception. Something went wrong"
+        }
+
+        return jsonify(jsonData), 500
 
 
 
@@ -80,7 +98,7 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
     try:
         # m = 0/0 # Generating Error
         if(not targetTableClass):
-            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
+            raise ResponseException({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
 
         TableClass = getModelClass(targetTableClass)
 
@@ -102,7 +120,7 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
         if(readPermission == False):
-            raise Exception({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 500})
+            raise ResponseException({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 500})
         #############################################################################################################
 
 
@@ -146,7 +164,7 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
         return jsonify(jsonData), 200
 
     
-    except Exception as e:
+    except ResponseException as e:
   
         error_dict = e.args[0]
 
@@ -159,3 +177,18 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
         }
 
         return jsonify(jsonData), error_dict["status"]
+    
+    except Exception as e:
+
+        # print(e)
+        # print(str(e))
+
+        jsonData = {
+            "success": False,
+            "type": "error",
+            "summary": "Something went wrong",
+            "message": str(e),
+            "error": "Unknown Exception. Something went wrong"
+        }
+
+        return jsonify(jsonData), 500

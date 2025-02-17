@@ -3,6 +3,9 @@ from flask import jsonify
 from auth.authUtilities import getPermissionFlags 
 # from models.models import PeakHour
 
+class ResponseException(Exception):
+    pass
+
 def getJSCompatibleTimeStamp(dt):
     if(dt is None): return None
     return int(dt.timestamp() * 1000)
@@ -11,7 +14,7 @@ def fetchPageMetaData(current_user, targetTableClass):
     try:
         # m = 0/0 # Generating Exception.
         if(targetTableClass is None):
-            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
+            raise ResponseException({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
 
         readPermission = False
         writePermission = False
@@ -72,8 +75,10 @@ def fetchPageMetaData(current_user, targetTableClass):
         # print("Works here")
         return jsonify(jsonData), 200
 
-    except Exception as e:
-        error_dict = e.args[0]
+    
+    except ResponseException as re:
+        # print(re)
+        error_dict = re.args[0]
 
         jsonData = {
             "success": False,
@@ -84,3 +89,19 @@ def fetchPageMetaData(current_user, targetTableClass):
         }
 
         return jsonify(jsonData), error_dict["status"]
+    
+    except Exception as e:
+
+        # print(e)
+        # print(str(e))
+
+        jsonData = {
+            "success": False,
+            "type": "error",
+            "summary": "Something went wrong",
+            "message": str(e),
+            "error": "Unknown Exception. Something went wrong"
+        }
+
+        return jsonify(jsonData), 500
+
