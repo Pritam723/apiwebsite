@@ -1,4 +1,4 @@
-cd .apivenv\Scripts
+cd apivenv\Scripts
 call activate.bat
 cd..
 cd..
