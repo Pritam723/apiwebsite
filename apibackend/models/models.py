@@ -1,14 +1,22 @@
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from .modelUtilities import getJSCompatibleTimeStamp
-from standardInterface.standardInterfaceUtilities import DEFAULT_FILTERS, MULTIPLE_UPLOADS, UPLOAD_POINTS_CHOICE, CUSTOM_UPLOADED_ON
+from sqlalchemy.dialects.postgresql import ARRAY
+
 
 db = SQLAlchemy()
 
 def getModelClass(targetTableClass):
-    return eval(targetTableClass)
+    print("Here")
+    import standardInterface.stardardInterfaceTables as STANDARD_INTERFACE_TABLES
+    FIND_TABLE = f"STANDARD_INTERFACE_TABLES.{targetTableClass}.{targetTableClass}"
+    print("Got the table")
+    print(FIND_TABLE)
+    return eval(FIND_TABLE)
 
 
+
+# All the Classes Inheriting this should be inside standardInterface.stardardInterfaceTables
 class StandardInterface(db.Model):
     __abstract__ = True
     
@@ -58,46 +66,23 @@ class StandardInterface(db.Model):
        }
 
 
-class PeakHour(StandardInterface):
-    __tablename__ = "PeakHours"
 
-    @classmethod
-    def get_upload_path(cls):
-        return "\Scheduling\Peak Hours and Season Declaration"
+class User(db.Model):
+    __tablename__ = "User"   
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
+    userId = db.Column(db.String(200), nullable=True)
+    password = db.Column(db.String(500), nullable=True)
+    eid = db.Column(db.String(200), nullable=True)
+    name = db.Column(db.String(200), nullable=True)
+    email = db.Column(db.String(200), nullable=True)
+    department = db.Column(db.String(200), nullable=True)
+    mobileNumber = db.Column(db.String(20), nullable=True)
+    organization = db.Column(db.String(200), nullable=True)
+    userCreatedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    lastModifiedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    isDeleted = db.Column(db.Boolean, nullable=True)
 
-    @classmethod
-    def get_read_permissions(cls):
-        return ["SO_ADMIN"]
-    @classmethod
-    def get_write_permissions(cls):
-        return ["SO_ADMIN"]
-    
-    @classmethod
-    def get_upload_points(cls):
-        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FILE_DATE"]
-        return UPLOAD_POINTS
 
-    @classmethod
-    def get_data_to_display(cls):
-        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
-                        "fy": False, "fileDateFromTo": False, "uploadedOn": True, "uploadedBy": False, "actualUploadDate": False, "size": True }
-        return DATA_TO_DISPLAY
-    
-    @classmethod
-    def get_sort_in_use(cls):
-        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
-                        "fy": False, "fileDateFromTo": False, "uploadedOn": True, "uploadedBy": False, "actualUploadDate": False, "size": True }
-        return SORT_IN_USE
-    
-    @classmethod
-    def get_filters_in_use(cls):
-        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": False, "Financial Year & Quarter": True}
-        return FILTERS_IN_USE
-    
-    @classmethod
-    def get_custom_uploaded_on_flag(cls):
-        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
-        return CUSTOM_UPLOADED_ON_FLAG
 
     @classmethod
     def get_default_filter(cls):
@@ -484,3 +469,15 @@ class YearAheadForecastingError(StandardInterface):
     def get_multiple_upload_flag(cls):
         ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
         return ALLOW_MULTIPLE_UPLOAD
+class UserRoles(db.Model):
+    __tablename__ = "UserRoles"   
+    uniqueUserId = db.Column(db.String(200), primary_key=True, unique=True, nullable=False)
+    roles = db.Column(ARRAY(db.String), nullable=False, default=[])
+
+
+
+class PagePermissions(db.Model):
+    __tablename__ = "PagePermissions"   
+    uniquePageId = db.Column(db.String(200), primary_key=True, unique=True, nullable=False)
+    readPermissions = db.Column(ARRAY(db.String), nullable=False, default=[])
+    writePermissions = db.Column(ARRAY(db.String), nullable=False, default=[])

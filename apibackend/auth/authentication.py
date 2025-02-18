@@ -1,25 +1,33 @@
-from flask import Flask
 from flask import jsonify
-from flask import request
 
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
+from .ldap import authenticate_ldap
 
 # Create a route to authenticate your users and return JWTs. The
 # create_access_token() function is used to actually generate the JWT.
 def create_token(user_id, password):
-    if user_id != "00091" or password != "00091":
-        print("No user matches. Returning 401")
-        return jsonify({"msg": "Bad username or password"}), 401
+
+
+    user_data = authenticate_ldap(user_id, password)
+
+    if(user_data is None):
+        return jsonify({"msg": "Incorrect username or password"}), 401
+
+
+    # if user_id != "00091" or password != "00091":
+    #     print("No user matches. Returning 401")
+    #     return jsonify({"msg": "Bad username or password"}), 401
 
     customIdentity = user_id
     # additional_claims = {"aud": "some_audience", "foo": "bar"}
-    user_data = {"user_id": user_id, "department": "IT", "eid" : "00091", "name" : "Pritam Dutta", 
-                 "email" : "pritam.dutta@grid-india.in", "organization" : "ERLDC GRID-INDIA", "roles" : ["SO_ADMIN", "IT_ADMIN"]}
-                 
+    # user_data = {"user_id": user_id, "department": "IT", "eid" : "00091", "name" : "Pritam Dutta", 
+    #              "email" : "pritam.dutta@grid-india.in", "organization" : "ERLDC GRID-INDIA", "roles" : ["SO_ADMIN", "IT_ADMIN"]}
+
+    user_data["roles"] =  ["SO_ADMIN", "IT_ADMIN"]    
     additional_claims = {"user_info" : user_data}
 
     access_token = create_access_token(identity=customIdentity, additional_claims=additional_claims)

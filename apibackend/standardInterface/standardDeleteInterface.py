@@ -3,11 +3,13 @@ from models.models import db, getModelClass
 from auth.authUtilities import getPermissionFlags 
 from flask_jwt_extended import get_jwt
 
+from .standardInterfaceUtilities import ResponseException
+
 def deleteFromStandardTable(current_user, productIdToDelete, targetTableClass):
     try:
         # m = 0/0 # Generating Error
         if((not targetTableClass) or (not productIdToDelete)):
-            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
+            raise ResponseException({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
 
         TableClass = getModelClass(targetTableClass)
 
@@ -29,7 +31,7 @@ def deleteFromStandardTable(current_user, productIdToDelete, targetTableClass):
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
         if(writePermission == False):
-            raise Exception({"message" : "You do not have permission to perform the action!!", "summary" : "Something went wrong", "status" : 403})
+            raise ResponseException({"message" : "You do not have permission to perform the action!!", "summary" : "Something went wrong", "status" : 403})
         #############################################################################################################
         
         product = TableClass.query.filter_by(id=productIdToDelete).first()
@@ -55,7 +57,7 @@ def deleteFromStandardTable(current_user, productIdToDelete, targetTableClass):
         return jsonify(jsonData), 200
 
 
-    except Exception as e:
+    except ResponseException as e:
   
         error_dict = e.args[0]
 
@@ -68,3 +70,18 @@ def deleteFromStandardTable(current_user, productIdToDelete, targetTableClass):
         }
 
         return jsonify(jsonData), error_dict["status"]
+    
+    except Exception as e:
+
+        # print(e)
+        # print(str(e))
+
+        jsonData = {
+            "success": False,
+            "type": "error",
+            "summary": "Something went wrong",
+            "message": str(e),
+            "error": "Unknown Exception. Something went wrong"
+        }
+
+        return jsonify(jsonData), 500
