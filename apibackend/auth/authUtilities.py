@@ -1,3 +1,9 @@
+import re
+import random
+
+class ResponseException(Exception):
+    pass
+
 def getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info):
     
     # user_info = {'user_id': '00091', 'department': 'IT', 'eid': '00091', 'name': 'Pritam Dutta', 
@@ -18,3 +24,24 @@ def getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info):
         writePermission = True
 
     return readPermission, writePermission
+
+
+def is_valid_password(password):
+    """Check if password meets complexity requirements."""
+    if (len(password) < 8 or
+        not re.search(r'[a-z]', password) or  # At least one lowercase
+        not re.search(r'[A-Z]', password) or  # At least one uppercase
+        not re.search(r'\d', password)):     # At least one numeric
+        return False
+    return True
+
+
+
+def generate_validation_code():
+    """Generate a random 6-digit code that is not all zeros."""
+    while True:
+        code = str(random.randint(100000, 999999))  # Ensures a 6-digit number
+        if code != "000000":  # Extra safety check
+            return code
+
+

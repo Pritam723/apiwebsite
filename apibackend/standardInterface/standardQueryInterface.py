@@ -180,8 +180,8 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
     
     except Exception as e:
 
-        # print(e)
-        # print(str(e))
+        print(e)
+        print(str(e))
 
         jsonData = {
             "success": False,
