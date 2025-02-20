@@ -5,7 +5,7 @@ import os
 from .standardInterfaceUtilities import getQueryRange, formatDateWithSuffix
 from auth.authUtilities import getPermissionFlags 
 from flask_jwt_extended import get_jwt
-# import time
+import time
 from .standardInterfaceUtilities import ResponseException
 
 
@@ -91,7 +91,7 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
 
 
 def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
-    # time.sleep(5) # Introducing delay.
+    time.sleep(2) # Introducing delay.
     # filterOptions looks like:
     # {'filterBy': 'Date Range', 'filterRange': None or [None, None], 'filterFY': None, 'filterQuarter': None, 'defaultFiltering': 'CURRENT_YEAR'}
    

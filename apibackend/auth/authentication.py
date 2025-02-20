@@ -466,6 +466,7 @@ def forgot_password_verify(user_data):
         # We are here means it is a match. User is verified.
         existing_user.validationCode = "000000"
         existing_user.password = hashed_password
+        existing_user.lastModifiedOn = timeNow
         # Commit changes to database
         db.session.commit()
 
