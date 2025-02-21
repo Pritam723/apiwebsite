@@ -2,13 +2,13 @@ from models.models import StandardInterface
 from standardInterface.standardInterfaceUtilities import DEFAULT_FILTERS, MULTIPLE_UPLOADS, UPLOAD_POINTS_CHOICE, CUSTOM_UPLOADED_ON
 
 
-class LimitedTenders(StandardInterface):
+class RajbhasaPatrika(StandardInterface):
 
-    __tablename__ = "LimitedTenders"
+    __tablename__ = "RajbhasaPatrika"
 
     @classmethod
     def get_upload_path(cls):
-        return "\More\Contracts Awarded\Limited Tender"
+        return "\More\Rajbhasa Patrika"
 
     @classmethod
     def get_read_permissions(cls):
