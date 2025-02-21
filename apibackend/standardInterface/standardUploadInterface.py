@@ -5,8 +5,10 @@ from models.models import db, getModelClass
 from auth.authUtilities import getPermissionFlags 
 from flask_jwt_extended import get_jwt
 from .standardInterfaceUtilities import ResponseException
+import time
 
 def addDataToStandardTable(product, uploadPoints, files, TableClass):
+    # time.sleep(5)
     preprocessDataBeforeAddition(product, uploadPoints)
     print("Data Preprocessed before addition")
     # print(product)

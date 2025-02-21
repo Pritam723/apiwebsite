@@ -19,12 +19,12 @@ class PeakHours(StandardInterface):
     
     @classmethod
     def get_upload_points(cls):
-        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FILE_DATE"]
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["MONTH"]
         return UPLOAD_POINTS
 
     @classmethod
     def get_data_to_display(cls):
-        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": True, "quarter": False, "year": False,
                         "fy": False, "fileDateFromTo": False, "uploadedOn": True, "uploadedBy": False, "actualUploadDate": False, "size": True }
         return DATA_TO_DISPLAY
     

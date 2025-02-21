@@ -69,30 +69,18 @@ class StandardInterface(db.Model):
 
 class User(db.Model):
     __tablename__ = "User"   
-    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
-    userId = db.Column(db.String(200), nullable=True)
+    userId = db.Column(db.String(200), primary_key=True, unique=True, nullable=False)
     password = db.Column(db.String(500), nullable=True)
-    eid = db.Column(db.String(200), nullable=True)
     name = db.Column(db.String(200), nullable=True)
     email = db.Column(db.String(200), nullable=True)
-    department = db.Column(db.String(200), nullable=True)
     mobileNumber = db.Column(db.String(20), nullable=True)
     organization = db.Column(db.String(200), nullable=True)
     userCreatedOn = db.Column(db.DateTime(timezone=True), nullable=True)
     lastModifiedOn = db.Column(db.DateTime(timezone=True), nullable=True)
     isDeleted = db.Column(db.Boolean, nullable=True)
-
-
-
-    @classmethod
-    def get_default_filter(cls):
-        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
-        return DEFAULT_FILTER
-    
-    @classmethod
-    def get_multiple_upload_flag(cls):
-        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
-        return ALLOW_MULTIPLE_UPLOAD
+    isValidated = db.Column(db.Boolean, nullable=True)
+    validationCode = db.Column(db.String(10), nullable=True)
+    codeValidity = db.Column(db.DateTime(timezone=True), nullable=True)
     
 class UserRoles(db.Model):
     __tablename__ = "UserRoles"   
@@ -106,6 +94,7 @@ class PagePermissions(db.Model):
     uniquePageId = db.Column(db.String(200), primary_key=True, unique=True, nullable=False)
     readPermissions = db.Column(ARRAY(db.String), nullable=False, default=[])
     writePermissions = db.Column(ARRAY(db.String), nullable=False, default=[])
+
 
 
 

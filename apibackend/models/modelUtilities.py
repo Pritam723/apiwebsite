@@ -76,9 +76,9 @@ def fetchPageMetaData(current_user, targetTableClass):
         return jsonify(jsonData), 200
 
     
-    except ResponseException as re:
+    except ResponseException as e:
         # print(re)
-        error_dict = re.args[0]
+        error_dict = e.args[0]
 
         jsonData = {
             "success": False,
