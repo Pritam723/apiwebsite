@@ -5,7 +5,7 @@ from standardInterface.standardInterfaceUtilities import DEFAULT_FILTERS, MULTIP
 class RajbhasaPatrika(StandardInterface):
 
     __tablename__ = "RajbhasaPatrika"
-
+    
     @classmethod
     def get_upload_path(cls):
         return "\More\Rajbhasa Patrika"
