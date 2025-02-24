@@ -192,8 +192,10 @@ def preprocessDataBeforeAddition(product, uploadPoints):
         endDateObj = dateObj.replace(day = 31, month = 12)
         
     elif(fy):
+        # 2023-24
         startYear = int(fy.split('-')[0])
-        endYear = int(fy.split('-')[1])
+
+        endYear = startYear + 1
         startDateObj = datetime(startYear,4,1)
         endDateObj = datetime(endYear,3,31)
     
@@ -370,7 +372,7 @@ def preprocessDataBeforeUpdate(product, uploadPoints):
         
     elif(fy):
         startYear = int(fy.split('-')[0])
-        endYear = int(fy.split('-')[1])
+        endYear = startYear + 1
         startDateObj = datetime(startYear,4,1)
         endDateObj = datetime(endYear,3,31)
     elif(fileDateFromTo):
@@ -607,3 +609,10 @@ def saveWithUniqueName(uploadFolder, file):
         fh.write(binary_obj)
 
     return os.path.basename(filepath)  # Return saved file name
+
+
+
+####################################################################################################
+
+class ResponseException(Exception):
+    pass

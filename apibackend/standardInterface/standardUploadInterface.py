@@ -4,8 +4,11 @@ from .standardInterfaceUtilities import preprocessDataBeforeAddition,preprocessD
 from models.models import db, getModelClass
 from auth.authUtilities import getPermissionFlags 
 from flask_jwt_extended import get_jwt
+from .standardInterfaceUtilities import ResponseException
+import time
 
 def addDataToStandardTable(product, uploadPoints, files, TableClass):
+    # time.sleep(5)
     preprocessDataBeforeAddition(product, uploadPoints)
     print("Data Preprocessed before addition")
     # print(product)
@@ -90,7 +93,7 @@ def updateDataToStandardTable(product, uploadPoints, files, TableClass):
 
     old_product = TableClass.query.get(product["id"])  # Fetch entry by ID
     if old_product is None:
-        raise Exception({"message" : "Could not able to find the Item!!", "summary" : "Something went wrong", "status" : 500})
+        raise ResponseException({"message" : "Could not able to find the Item!!", "summary" : "Something went wrong", "status" : 500})
 
     # First change the parameters of old_product with the new_product. Do not
     # Change the ID obviously. Also after this do not forget to add the file
@@ -152,7 +155,7 @@ def dataToStandardTable(current_user, product, uploadPoints, files, targetTableC
     try:
 
         if(not (product and files and targetTableClass)):
-            raise Exception({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
+            raise ResponseException({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
 
 
         TableClass = getModelClass(targetTableClass)
@@ -182,7 +185,7 @@ def dataToStandardTable(current_user, product, uploadPoints, files, targetTableC
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
         if(writePermission == False):
-            raise Exception({"message" : "You do not have permission to perform the action!!", "summary" : "Something went wrong", "status" :403})
+            raise ResponseException({"message" : "You do not have permission to perform the action!!", "summary" : "Something went wrong", "status" :403})
 
         #############################################################################################################
 
@@ -194,7 +197,7 @@ def dataToStandardTable(current_user, product, uploadPoints, files, targetTableC
             print("Updating Data")
             return updateDataToStandardTable(product, uploadPoints, files, TableClass)
     
-    except Exception as e:
+    except ResponseException as e:
   
         error_dict = e.args[0]
 
@@ -207,3 +210,18 @@ def dataToStandardTable(current_user, product, uploadPoints, files, targetTableC
         }
 
         return jsonify(jsonData), error_dict["status"]
+
+    except Exception as e:
+
+        # print(e)
+        # print(str(e))
+
+        jsonData = {
+            "success": False,
+            "type": "error",
+            "summary": "Something went wrong",
+            "message": str(e),
+            "error": "Unknown Exception. Something went wrong"
+        }
+
+        return jsonify(jsonData), 500

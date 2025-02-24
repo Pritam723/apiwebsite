@@ -13,7 +13,7 @@ import os
 from dotenv import load_dotenv
 
 # Imports from other modules.
-from auth import authentication
+from auth.authentication import create_token, register_user, register_user_verify, forgot_password, forgot_password_verify
 from standardInterface.standardUploadInterface import dataToStandardTable
 from standardInterface.standardDeleteInterface import deleteFromStandardTable
 from standardInterface.standardQueryInterface import fetchDataFromStandardTable, downloadFromStandardTable
@@ -21,6 +21,7 @@ from standardInterface.standardInterfaceUtilities import getFinancialYearList
 
 from models.models import db
 from models.modelUtilities import fetchPageMetaData
+from RUN_DB_MIGRATION import runMigration
 
 
 # For DB Connection.
@@ -67,13 +68,13 @@ def hello():
     return 'Hello, World!'
 
 
-############################# Utility Functions #####################################
+############################# Utility Functions ##########################################
 
 @app.route("/getFYList", methods=["GET"])
 def getFYList():
     return getFinancialYearList(), 200
 
-#######################################################################################
+############################ Login/ Register Operations ##################################
 
 
 @app.route("/login", methods=["POST"])
@@ -81,10 +82,46 @@ def login():
     # print("here I am")
     user_id = request.json.get("email", None)
     password = request.json.get("password", None)
-    print(user_id, password)
-    token = authentication.create_token(user_id, password)
+    # print(user_id, password)
+    token = create_token(user_id, password)
     # print(token)
     return token
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    print("register")
+    user_data = request.json
+    registerRes = register_user(user_data)
+    return registerRes
+
+
+@app.route("/registerVerifyOTP", methods=["POST"])
+def registerVerifyOTP():
+    print("registerVerifyOTP")
+    otp = request.json.get("otp")
+    user_data = request.json.get("userData")
+    registerVerifyRes = register_user_verify(otp, user_data)
+    return registerVerifyRes
+
+
+@app.route("/forgotPassword", methods=["POST"])
+def forgotPassword():
+    print("forgotPassword")
+    user_data = request.json
+    forgotPasswordRes = forgot_password(user_data)
+    return forgotPasswordRes
+
+
+
+@app.route("/forgotPasswordVerifyOTP", methods=["POST"])
+def forgotPasswordVerifyOTP():
+    print("forgotPasswordVerifyOTP")
+
+    user_data = request.json
+
+    forgotPasswordVerifyRes = forgot_password_verify(user_data)
+    return forgotPasswordVerifyRes
 
 # We are using the `refresh=True` options in jwt_required to only allow
 # refresh tokens to access this route.
@@ -179,8 +216,7 @@ def fetchStandardPageMetaData():
 # main driver function
 if __name__ == '__main__':
 
-    with app.app_context():
-        db.create_all()
-    print(db.Model)
-
+    # Run Migration only if a new Table is added.
+    runMigration(app, db)
+ 
     app.run(debug = True, port = 4001, host = "0.0.0.0")
