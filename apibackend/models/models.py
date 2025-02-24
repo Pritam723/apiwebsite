@@ -10,7 +10,7 @@ def getModelClass(targetTableClass):
 
 
 class StandardInterface(db.Model):
-    __abstract__ = True
+    _abstract_ = True
     
     # id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 
@@ -59,7 +59,7 @@ class StandardInterface(db.Model):
 
 
 class PeakHour(StandardInterface):
-    __tablename__ = "PeakHours"
+    _tablename_ = "PeakHours"
 
     @classmethod
     def get_upload_path(cls):
@@ -110,3 +110,581 @@ class PeakHour(StandardInterface):
         return ALLOW_MULTIPLE_UPLOAD
     
 
+
+class FinalSchedule(StandardInterface):
+    _tablename_ = "FinalSchedule"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Scheduling\Final Schedule"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["SO_ADMIN"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FILE_DATE"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": False, "Financial Year & Quarter": False}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["TRUE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+
+class ReconciliationCTU(StandardInterface):
+    _tablename_ = "ReconciliationCTU"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\TGNA\Reconciliation CTU"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["SO_ADMIN"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FILE_DATE"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": True, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": True, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": False, "Financial Year & Quarter": True}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["TRUE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+
+
+class ReconciliationApplicant(StandardInterface):
+    _tablename_ = "ReconciliationApplicant"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\TGNA\Reconciliation Applicant"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": True, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": True, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": False, "Year": True, "Month": True, "Financial Year & Quarter": True}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+ 
+ 
+class Disbursements(StandardInterface):
+    _tablename_ = "Disbursements"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\TGNA\Disbursements"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": True, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": True, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": False, "Year": False, "Month": True, "Financial Year & Quarter": False}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+
+class DSMDisbursementLetter(StandardInterface):
+    _tablename_ = "DSMDisbursementLetter"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\DSM\DSM Disbursement Letter"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": True, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": True, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": False, "Year": False, "Month": True, "Financial Year & Quarter": False}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+
+
+class DSMReconcilation(StandardInterface):
+    _tablename_ = "DSMReconcilation"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\DSM\DSM Reconcilation"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": True, "year": True,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": True, "year": True,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": False, "Year": False, "Month": False, "Financial Year & Quarter": True}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+         
+class ReactiveReconcilation(StandardInterface):
+    _tablename_ = "ReactiveReconcilation"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\Reactive\Reactive Reconcilation"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": True, "year": True,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": True, "year": True,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": False, "Year": False, "Month": False, "Financial Year & Quarter": True}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+class ReactiveDisbursementLetter(StandardInterface):
+    _tablename_ = "ReactiveDisbursementLetter"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\Reactive\Reactive Disbursement Letter"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": True, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": True, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": False, "Year": False, "Month": True, "Financial Year & Quarter": False}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+         
+
+   
+class RRASReconciliation(StandardInterface):
+    _tablename_ = "RRASReconciliation"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\Ancilliary Services\RRAS Reconciliation"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": False, "Year": False, "Month": False, "Financial Year & Quarter": False}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+  
+   
+class AGCReconciliation(StandardInterface):
+    _tablename_ = "AGCReconciliation"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\Market Operation\Ancilliary Services/AGC Reconciliation"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": False }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": True, "Year": False, "Month": False, "Financial Year & Quarter": False}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+  
+
+
+
+class ShutdownAvailedList(StandardInterface):
+    _tablename_ = "ShutdownAvailedList"
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\System Operation\Outage\Shutdown Availed List"
+
+    @classmethod
+    def get_read_permissions(cls):
+        return ["ALL"]
+    @classmethod
+    def get_write_permissions(cls):
+        return ["SO_ADMIN"]
+    
+    @classmethod
+    def get_upload_points(cls):
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        return UPLOAD_POINTS
+
+    @classmethod
+    def get_data_to_display(cls):
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": True, "fileDateFromTo": False, "uploadedOn": True, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return DATA_TO_DISPLAY
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": True, "uploadedBy": False, "actualUploadDate": False, "size": True }
+        return SORT_IN_USE
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": True, "Financial Year & Quarter": True}
+        return FILTERS_IN_USE
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]
+        return CUSTOM_UPLOADED_ON_FLAG
+
+    @classmethod
+    def get_default_filter(cls):
+        DEFAULT_FILTER = DEFAULT_FILTERS["NONE"] # To change it, check all the available options of DEFAULT_FILTERS.
+        return DEFAULT_FILTER
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        ALLOW_MULTIPLE_UPLOAD = MULTIPLE_UPLOADS["FALSE"]  # To Change it to False, Make it to MULTIPLE_UPLOADS["FALSE"]
+        return ALLOW_MULTIPLE_UPLOAD
+    
+    

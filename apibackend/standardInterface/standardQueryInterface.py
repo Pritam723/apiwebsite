@@ -57,7 +57,7 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
         return send_file(uploadPath, as_attachment=True)
 
     except Exception as e:
-  
+        print(e)
         error_dict = e.args[0]
 
         jsonData = {
@@ -147,6 +147,8 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
 
     
     except Exception as e:
+        
+        print(e)
   
         error_dict = e.args[0]
 
