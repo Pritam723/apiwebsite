@@ -36,7 +36,7 @@ class PeakHours(StandardInterface):
     
     @classmethod
     def get_filters_in_use(cls):
-        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": False, "Financial Year & Quarter": True}
+        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": True, "Financial Year & Quarter": True}
         return FILTERS_IN_USE
     
     @classmethod

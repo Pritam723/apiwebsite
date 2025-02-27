@@ -1,9 +1,12 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory, jsonify
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
-
+# For websocket connection.
+from flask_socketio import SocketIO, send
+import time
+from scheduledTasks.realTimeSCADA import getSCADADATA
 
 from flask_cors import CORS
 from datetime import timedelta
@@ -24,10 +27,14 @@ from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
 
 
+
+
+
 # For DB Connection.
 # from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+# Uses the default "static/" folder
 
 # Reading the .env file.
 load_dotenv(dotenv_path=".env")
@@ -60,6 +67,32 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
 
+# Setting up the websocket.
+socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3001", "http://10.3.101.179:3001"])
+@socketio.on("connect")
+def handle_connect():
+    data = getSCADADATA()
+    print(data)
+    time.sleep(2)
+    socketio.emit("message", {"data": data})
+
+@app.route('/testSocket', methods=["POST"])
+def send_updates():
+    print("Here")
+    
+    # Get JSON data from request
+    data = request.get_json()
+    print("Received Data:", data)  # Debugging
+    
+    # Emit WebSocket message
+    socketio.emit("message", {"data": data})
+    return jsonify({"message": "Data sent successfully"}), 200
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    print("Client disconnected")
+
+
 
 @app.route('/')
 def hello():
@@ -73,6 +106,15 @@ def hello():
 @app.route("/getFYList", methods=["GET"])
 def getFYList():
     return getFinancialYearList(), 200
+
+
+########################### Serving static files #########################################
+
+@app.route('/images/<filename>')
+def serve_image(filename):
+    return send_from_directory("static/images", filename)
+
+
 
 ############################ Login/ Register Operations ##################################
 
@@ -219,4 +261,6 @@ if __name__ == '__main__':
     # Run Migration only if a new Table is added.
     runMigration(app, db)
  
-    app.run(debug = True, port = 4001, host = "0.0.0.0")
+    # app.run(debug = True, port = 4001, host = "0.0.0.0")
+    socketio.run(app, debug=True, port=4001, host="0.0.0.0")
+

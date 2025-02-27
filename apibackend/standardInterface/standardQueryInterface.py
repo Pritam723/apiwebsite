@@ -91,7 +91,7 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
 
 
 def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
-    time.sleep(2) # Introducing delay.
+    # time.sleep(2) # Introducing delay.
     # filterOptions looks like:
     # {'filterBy': 'Date Range', 'filterRange': None or [None, None], 'filterFY': None, 'filterQuarter': None, 'defaultFiltering': 'CURRENT_YEAR'}
    
