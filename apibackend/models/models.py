@@ -1,14 +1,22 @@
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from .modelUtilities import getJSCompatibleTimeStamp
-from standardInterface.standardInterfaceUtilities import DEFAULT_FILTERS, MULTIPLE_UPLOADS, UPLOAD_POINTS_CHOICE, CUSTOM_UPLOADED_ON
+from sqlalchemy.dialects.postgresql import ARRAY
+
 
 db = SQLAlchemy()
 
 def getModelClass(targetTableClass):
-    return eval(targetTableClass)
+    print("Here")
+    import standardInterface.stardardInterfaceTables as STANDARD_INTERFACE_TABLES
+    FIND_TABLE = f"STANDARD_INTERFACE_TABLES.{targetTableClass}.{targetTableClass}"
+    print("Got the table")
+    print(FIND_TABLE)
+    return eval(FIND_TABLE)
 
 
+
+# All the Classes Inheriting this should be inside standardInterface.stardardInterfaceTables
 class StandardInterface(db.Model):
     _abstract_ = True
     
@@ -57,3 +65,32 @@ class StandardInterface(db.Model):
             'isMigrated': self.isMigrated,     
        }
 
+
+
+class User(db.Model):
+    __tablename__ = "User"   
+    userId = db.Column(db.String(200), primary_key=True, unique=True, nullable=False)
+    password = db.Column(db.String(500), nullable=True)
+    name = db.Column(db.String(200), nullable=True)
+    email = db.Column(db.String(200), nullable=True)
+    mobileNumber = db.Column(db.String(20), nullable=True)
+    organization = db.Column(db.String(200), nullable=True)
+    userCreatedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    lastModifiedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    isDeleted = db.Column(db.Boolean, nullable=True)
+    isValidated = db.Column(db.Boolean, nullable=True)
+    validationCode = db.Column(db.String(10), nullable=True)
+    codeValidity = db.Column(db.DateTime(timezone=True), nullable=True)
+    
+class UserRoles(db.Model):
+    __tablename__ = "UserRoles"   
+    uniqueUserId = db.Column(db.String(200), primary_key=True, unique=True, nullable=False)
+    roles = db.Column(ARRAY(db.String), nullable=False, default=[])
+
+
+
+class PagePermissions(db.Model):
+    __tablename__ = "PagePermissions"   
+    uniquePageId = db.Column(db.String(200), primary_key=True, unique=True, nullable=False)
+    readPermissions = db.Column(ARRAY(db.String), nullable=False, default=[])
+    writePermissions = db.Column(ARRAY(db.String), nullable=False, default=[])
