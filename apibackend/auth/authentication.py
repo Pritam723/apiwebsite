@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 from .authUtilities import ResponseException, is_valid_password, generate_validation_code
 from .ldap import authenticate_ldap, isNotLDAPUser
 from models.models import db, User
+from permissions.userRoles import USER_ROLES
+from permissions.roles import Roles
 
 import os
 
@@ -46,9 +48,11 @@ def create_token(user_id, password):
         if(user_data is None):
             raise ResponseException({"message" : "Incorrect username or password.", "summary" : "Incorrect username or password.", "status" : 401})
 
-        user_data["roles"] =  ["SO_ADMIN", "IT_ADMIN"] # Change this later.
-
-
+        # user_data["roles"] =  ["SO_ADMIN", "IT_ADMIN"] # Change this later.
+        # user_data["roles"] = USER_ROLES.get(user_id, [Roles.VIEWER])
+        # Not sending Roles in frontend.
+        
+        print(user_data)
         customIdentity = user_id
         # additional_claims = {"aud": "some_audience", "foo": "bar"}
         # user_data = {"user_id": user_id, "name" : "Pritam Dutta", "mobileNumber": "8981224244"

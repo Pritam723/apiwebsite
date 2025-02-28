@@ -67,31 +67,31 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
 
-# Setting up the websocket.
-socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3001", "http://10.3.101.179:3001"])
-@socketio.on("connect")
-def handle_connect():
-    data = getSCADADATA()
-    print(data)
-    time.sleep(2)
-    socketio.emit("message", {"data": data})
+###################################### Setting up the websocket. ##################################
+# socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3001", "http://10.3.101.179:3001"])
+# @socketio.on("connect")
+# def handle_connect():
+#     data = getSCADADATA()
+#     print(data)
+#     time.sleep(2)
+#     socketio.emit("message", {"data": data})
 
-@app.route('/testSocket', methods=["POST"])
-def send_updates():
-    print("Here")
+# @app.route('/testSocket', methods=["POST"])
+# def send_updates():
+#     print("Here")
     
-    # Get JSON data from request
-    data = request.get_json()
-    print("Received Data:", data)  # Debugging
+#     # Get JSON data from request
+#     data = request.get_json()
+#     print("Received Data:", data)  # Debugging
     
-    # Emit WebSocket message
-    socketio.emit("message", {"data": data})
-    return jsonify({"message": "Data sent successfully"}), 200
+#     # Emit WebSocket message
+#     socketio.emit("message", {"data": data})
+#     return jsonify({"message": "Data sent successfully"}), 200
 
-@socketio.on("disconnect")
-def handle_disconnect():
-    print("Client disconnected")
-
+# @socketio.on("disconnect")
+# def handle_disconnect():
+#     print("Client disconnected")
+###############################################################################################
 
 
 @app.route('/')
@@ -114,7 +114,9 @@ def getFYList():
 def serve_image(filename):
     return send_from_directory("static/images", filename)
 
-
+@app.route('/files/<filename>')
+def serve_file(filename):
+    return send_from_directory("static/files", filename)
 
 ############################ Login/ Register Operations ##################################
 
@@ -261,6 +263,6 @@ if __name__ == '__main__':
     # Run Migration only if a new Table is added.
     runMigration(app, db)
  
-    # app.run(debug = True, port = 4001, host = "0.0.0.0")
-    socketio.run(app, debug=True, port=4001, host="0.0.0.0")
+    app.run(debug = True, port = 4001, host = "0.0.0.0")
+    # socketio.run(app, debug=True, port=4001, host="0.0.0.0")
 

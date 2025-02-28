@@ -2,6 +2,9 @@ from flask_jwt_extended import get_jwt
 from flask import jsonify
 from auth.authUtilities import getPermissionFlags 
 # from models.models import PeakHour
+from permissions.pagePermissions import PAGE_PERMISSIONS
+from permissions.roles import Roles
+
 
 class ResponseException(Exception):
     pass
@@ -12,6 +15,8 @@ def getJSCompatibleTimeStamp(dt):
 
 def fetchPageMetaData(current_user, targetTableClass):
     try:
+        # import time
+        # time.sleep(2)
         # m = 0/0 # Generating Exception.
         if(targetTableClass is None):
             raise ResponseException({"message" : "Insufficient Data Sent from Client!!", "summary" : "Something went wrong", "status" : 500})
@@ -22,8 +27,26 @@ def fetchPageMetaData(current_user, targetTableClass):
         from .models import getModelClass # Lazy Import.
         TableClass = getModelClass(targetTableClass)
 
-        allowedWriteRoles = TableClass.get_write_permissions()
-        allowedReadRoles = TableClass.get_read_permissions()
+
+
+        #########################   Check Read-Write Permissions ###################################################
+        readPermission = False
+        writePermission = False
+
+
+        # allowedWriteRoles = TableClass.get_write_permissions()
+        # allowedReadRoles = TableClass.get_read_permissions()
+        # print(allowedWriteRoles)
+        permissions = PAGE_PERMISSIONS.get(targetTableClass, {'READ_PERMISSION': [Roles.SUPER_ADMIN],'WRITE_PERMISSION': [Roles.SUPER_ADMIN]})
+        allowedReadRoles = permissions['READ_PERMISSION']
+        allowedWriteRoles = permissions['WRITE_PERMISSION']
+        # {'READ_PERMISSION': [],'WRITE_PERMISSION': []}
+
+        print(allowedReadRoles)
+        print(allowedWriteRoles)
+
+        #############################################################################################################
+
 
         multipleUploads = TableClass.get_multiple_upload_flag()
 
@@ -38,11 +61,11 @@ def fetchPageMetaData(current_user, targetTableClass):
 
         # print(allowedWriteRoles)
 
-        user_info = {}
+        user_info = None
         if current_user:
             # Get additional claims
             claims = get_jwt()
-            user_info = claims.get("user_info", {})
+            user_info = claims.get("user_info", None)
 
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
