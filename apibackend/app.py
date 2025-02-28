@@ -23,6 +23,10 @@ from models.models import db
 from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
 
+#   edit by 00339
+from flask_mail import Mail
+from celery import Celery
+#   edit by 00339
 
 # For DB Connection.
 # from flask_sqlalchemy import SQLAlchemy
@@ -39,6 +43,9 @@ encoded_db_password = db_password.replace("@", "%40")
 db_location = os.getenv('DB_URL')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_user}:{encoded_db_password}@{db_location}"
 db.init_app(app)
+
+
+
 
 
 # Setting up File Upload Settings
