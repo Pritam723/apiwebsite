@@ -202,6 +202,9 @@ def register_user(user_data):
         db.session.add(new_user)
         db.session.commit()
 
+  
+
+
 
         data = {
             "info": f"User registered successfully with UserID/EmailID: {email}"
@@ -374,6 +377,9 @@ def forgot_password(user_data):
         
         # Commit changes to database
         db.session.commit()
+
+        # Email OTP to email address.
+        # Try asynchronous email sending here.
 
         
         data = {
