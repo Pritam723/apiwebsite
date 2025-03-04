@@ -27,8 +27,8 @@ from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
 
 #   edit by 00339
-from flask_mail import Mail
-from celery import Celery
+# from flask_mail import Mail
+# from celery import Celery
 #   edit by 00339
 
 
