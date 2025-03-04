@@ -18,3 +18,7 @@ apibackend/uploads
 apibackend\\uploads
 /apibackend/uploads
 \\apibackend\\uploads
+apibackend/static
+apibackend\\static
+/apibackend/static
+\\apibackend\\static
