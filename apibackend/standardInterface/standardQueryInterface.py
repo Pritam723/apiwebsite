@@ -7,7 +7,8 @@ from auth.authUtilities import getPermissionFlags
 from flask_jwt_extended import get_jwt
 import time
 from .standardInterfaceUtilities import ResponseException
-
+from permissions.pagePermissions import PAGE_PERMISSIONS
+from permissions.roles import Roles
 
 def downloadFromStandardTable(current_user, productIdToDownload, targetTableClass):
     # print(productIdToDownload, targetTableClass)
@@ -25,29 +26,31 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
         readPermission = False
         writePermission = False
 
-        allowedWriteRoles = TableClass.get_write_permissions()
-        allowedReadRoles = TableClass.get_read_permissions()
-        # print(allowedWriteRoles)
 
-        user_info = {}
+        # allowedWriteRoles = TableClass.get_write_permissions()
+        # allowedReadRoles = TableClass.get_read_permissions()
+        # print(allowedWriteRoles)
+        permissions = PAGE_PERMISSIONS.get(targetTableClass, {'READ_PERMISSION': [Roles.SUPER_ADMIN],'WRITE_PERMISSION': [Roles.SUPER_ADMIN]})
+        allowedReadRoles = permissions['READ_PERMISSION']
+        allowedWriteRoles = permissions['WRITE_PERMISSION']
+        # {'READ_PERMISSION': [],'WRITE_PERMISSION': []}
+
+        user_info = None
         if current_user:
             # Get additional claims
             claims = get_jwt()
-            user_info = claims.get("user_info", {})
-
-            print(claims)
+            user_info = claims.get("user_info", None)
 
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
-        print(allowedReadRoles)
-        print(user_info)
+        # print(allowedReadRoles)
+        # print(user_info)
 
 
         if(readPermission == False):
             raise ResponseException({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 403})
 
         #############################################################################################################
-
 
         product = TableClass.query.filter_by(id=productIdToDownload).first()
         
@@ -107,22 +110,25 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
         writePermission = False
 
 
-        allowedWriteRoles = TableClass.get_write_permissions()
-        allowedReadRoles = TableClass.get_read_permissions()
+        # allowedWriteRoles = TableClass.get_write_permissions()
+        # allowedReadRoles = TableClass.get_read_permissions()
         # print(allowedWriteRoles)
+        permissions = PAGE_PERMISSIONS.get(targetTableClass, {'READ_PERMISSION': [Roles.SUPER_ADMIN],'WRITE_PERMISSION': [Roles.SUPER_ADMIN]})
+        allowedReadRoles = permissions['READ_PERMISSION']
+        allowedWriteRoles = permissions['WRITE_PERMISSION']
+        # {'READ_PERMISSION': [],'WRITE_PERMISSION': []}
 
-        user_info = {}
+        user_info = None
         if current_user:
             # Get additional claims
             claims = get_jwt()
-            user_info = claims.get("user_info", {})
+            user_info = claims.get("user_info", None)
 
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
         if(readPermission == False):
             raise ResponseException({"message" : "You do not have permission to fetch the Data!!", "summary" : "Something went wrong", "status" : 500})
         #############################################################################################################
-
 
         queryStartDateObj, queryEndDateObj = getQueryRange(filterOptions)
         # print(queryStartDateObj, queryEndDateObj)

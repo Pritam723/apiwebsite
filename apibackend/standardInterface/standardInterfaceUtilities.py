@@ -1,6 +1,5 @@
 from datetime import  datetime, timedelta
 # from enum import Enum
-import pandas as pd
 import pytz
 import base64
 from codecs import encode
@@ -161,7 +160,7 @@ def preprocessDataBeforeAddition(product, uploadPoints):
         startDateObj = jsDateStrToTimeZoneAwareDate(fileDate)
         print(startDateObj)
 
-        print(pd.to_datetime(fileDate))
+        # print(pd.to_datetime(fileDate))
 
         endDateObj = startDateObj  
     elif(weekStartsEnds):
@@ -341,7 +340,7 @@ def preprocessDataBeforeUpdate(product, uploadPoints):
         startDateObj = jsDateStrToTimeZoneAwareDate(fileDate)
         print(startDateObj)
 
-        print(pd.to_datetime(fileDate))
+        # print(pd.to_datetime(fileDate))
 
         endDateObj = startDateObj  
     elif(weekStartsEnds):
