@@ -18,3 +18,5 @@ apibackend/uploads
 apibackend\\uploads
 /apibackend/uploads
 \\apibackend\\uploads
+apibackend/EmailSender
+apibackend\\EmailSender
