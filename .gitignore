@@ -22,3 +22,5 @@ apibackend/static
 apibackend\\static
 /apibackend/static
 \\apibackend\\static
+apibackend/EmailSender
+apibackend\\EmailSender
