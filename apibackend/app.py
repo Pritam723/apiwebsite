@@ -22,6 +22,8 @@ from standardInterface.standardDeleteInterface import deleteFromStandardTable
 from standardInterface.standardQueryInterface import fetchDataFromStandardTable, downloadFromStandardTable
 from standardInterface.standardInterfaceUtilities import getFinancialYearList
 
+from album.album import addNewAlbum, fetchAllAlbums, deleteAnAlbum, fetchAlbum
+
 from models.models import db
 from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
@@ -64,7 +66,7 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 # CORS(app)
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
 
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "http://10.3.101.179:3001"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "http://10.3.101.179:3001", "http://10.3.200.152:3001"]}})
 
 
 # Setup the Flask-JWT-Extended extension
@@ -124,6 +126,67 @@ def serve_image(filename):
 @app.route('/files/<filename>')
 def serve_file(filename):
     return send_from_directory("static/files", filename)
+
+############################ Album #######################################################
+
+@app.route("/addAlbum", methods = ["POST"])
+@jwt_required()
+def addAlbum():
+    print("Adding/Updating Album")
+    current_user = get_jwt_identity()
+
+    product = request.json.get("product", None)
+    files = request.json.get("files", None)
+    targetTableClass = request.json.get("targetTableClass", None)
+    # print(product)
+    # print(uploadPoints)
+
+    response = addNewAlbum(current_user, product, files, targetTableClass)
+    
+    return(response)
+
+
+@app.route("/deleteAlbum", methods = ["POST"])
+@jwt_required()
+def deleteAlbum():
+    print("Deleting Album")
+    current_user = get_jwt_identity()
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    albumId = request.json.get("albumId", None)
+
+    # print(product)
+    # print(uploadPoints)
+
+    response = deleteAnAlbum(current_user, albumId, targetTableClass)
+    
+    return(response)
+
+@app.route("/getAlbums", methods = ["POST"])
+def getAlbums():
+    print("Fetching Albums...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    year = request.json.get("year", None)
+
+    response = fetchAllAlbums(targetTableClass, year)
+
+    return(response)
+
+
+@app.route("/getAlbum", methods = ["POST"])
+def getAlbum():
+    print("Fetching Album...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    albumId = request.json.get("albumId", None)
+
+    response = fetchAlbum(targetTableClass, albumId)
+
+    return(response)
+
+
+
 
 ############################ Login/ Register Operations ##################################
 

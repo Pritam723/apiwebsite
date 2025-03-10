@@ -9,10 +9,14 @@ db = SQLAlchemy()
 def getModelClass(targetTableClass):
     print("Here")
     import standardInterface.stardardInterfaceTables as STANDARD_INTERFACE_TABLES
-    FIND_TABLE = f"STANDARD_INTERFACE_TABLES.{targetTableClass}.{targetTableClass}"
-    print("Got the table")
-    print(FIND_TABLE)
-    return eval(FIND_TABLE)
+    FIND_TABLE = None
+    try:
+        FIND_TABLE = f"STANDARD_INTERFACE_TABLES.{targetTableClass}.{targetTableClass}"
+        return eval(FIND_TABLE)
+    except Exception as e:
+        print(e)
+        FIND_TABLE = f"{targetTableClass}"
+        return eval(FIND_TABLE)
 
 
 
@@ -97,4 +101,72 @@ class PagePermissions(db.Model):
 
 
 
+
+class Albums(db.Model):
+    __tablename__ = "Albums"   
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
+    title = db.Column(db.String(800), nullable=False)
+    year = db.Column(db.DateTime(timezone=True), nullable=True)
+    cover = db.Column(db.String(200), nullable=False)
+    noImages = db.Column(db.Integer, nullable=False, default=0)
+    images = db.Column(ARRAY(db.String), nullable=True, default=[])  # List of strings/imagenames
+    uploadedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    uploadedBy = db.Column(db.String(100), nullable=True)
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\images"
+    
+    
+    @property
+    def serialize(self):
+       """Return object data in easily serializable format"""
+       return {
+            'id': self.id,
+            'title': self.title,
+            'year': getJSCompatibleTimeStamp(self.year),
+            'cover': self.cover,
+            'noImages': self.noImages,
+            # 'images': self.images,
+            'uploadedOn': self.uploadedOn,
+            # 'uploadedOn': getJSCompatibleTimeStamp(self.uploadedOn)   
+       }
+    
+    
+    @classmethod
+    def get_upload_points(cls):
+        return {}
+
+    @classmethod
+    def get_data_to_display(cls):
+        return {}
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        return {}
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        return {}
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        return False
+
+    @classmethod
+    def get_default_filter(cls):
+        return None
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        return True
+
+
+class Images(db.Model):
+    __tablename__ = "Images"   
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
+    imageName = db.Column(db.String(200), nullable=False)
+    imageWidth = db.Column(db.Integer, nullable=False, default=320)
+    imageHeight = db.Column(db.Integer, nullable=False, default=213)
+    partOfAlbum = db.Column(db.String(200), nullable=True)
 

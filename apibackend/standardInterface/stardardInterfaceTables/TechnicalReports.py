@@ -6,7 +6,7 @@ class TechnicalReports(StandardInterface):
 
     @classmethod
     def get_upload_path(cls):
-        return "\Reports\ Technical Reports"
+        return "\Reports\Technical Reports"
 
     @classmethod
     def get_read_permissions(cls):

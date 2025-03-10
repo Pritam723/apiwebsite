@@ -6,7 +6,7 @@ class MonthlyDeviationReport(StandardInterface):
 
     @classmethod
     def get_upload_path(cls):
-        return "\Reports\ Monthly Deviation Report"
+        return "\Reports\Monthly Deviation Report"
 
     @classmethod
     def get_read_permissions(cls):

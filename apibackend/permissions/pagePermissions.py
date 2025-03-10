@@ -52,5 +52,6 @@ PAGE_PERMISSIONS = {
     'WeekAheadForecastingError': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
     'WeekAheadRollingForecast': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
     'WeeklyReports': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
-    'YearAheadForecastingError': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]}
+    'YearAheadForecastingError': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
+    'Albums': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]}
 }

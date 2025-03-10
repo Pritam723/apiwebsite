@@ -54,7 +54,7 @@ from standardInterface.stardardInterfaceTables.QuarterlyReconciliationStatement 
 from standardInterface.stardardInterfaceTables.PSDF import PSDF
 from standardInterface.stardardInterfaceTables.CongestionReport import CongestionReport
 
-from models.models import User, UserRoles,PagePermissions
+from models.models import User, UserRoles,PagePermissions,Albums
 
 def runMigration(app, db):
     with app.app_context():
