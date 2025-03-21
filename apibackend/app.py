@@ -24,6 +24,9 @@ from standardInterface.standardInterfaceUtilities import getFinancialYearList
 
 from album.album import addNewAlbum, fetchAllAlbums, deleteAnAlbum, fetchAlbum
 
+from tender.tender import addNewTender, fetchAllTenders, deleteOneTender, fetchTender
+
+
 from models.models import db
 from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
@@ -187,6 +190,63 @@ def getAlbum():
 
 
 
+
+############################ Tender #######################################################
+
+@app.route("/addTender", methods = ["POST"])
+@jwt_required()
+def addTender():
+    print("Adding/Updating Tender")
+    current_user = get_jwt_identity()
+
+    product = request.json.get("product", None)
+    files = request.json.get("files", None)
+    targetTableClass = request.json.get("targetTableClass", None)
+    # print(product)
+    # print(uploadPoints)
+
+    response = addNewTender(current_user, product, files, targetTableClass)
+    
+    return(response)
+
+
+@app.route("/deleteTender", methods = ["POST"])
+@jwt_required()
+def deleteTender():
+    print("Deleting Tender")
+    current_user = get_jwt_identity()
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    tenderId = request.json.get("tenderId", None)
+
+    # print(product)
+    # print(uploadPoints)
+
+    response = deleteOneTender(current_user, tenderId, targetTableClass)
+    
+    return(response)
+
+@app.route("/getTenders", methods = ["POST"])
+def getTenders():
+    print("Fetching Tenders...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+
+    response = fetchAllTenders(targetTableClass)
+
+    return(response)
+
+
+@app.route("/getTender", methods = ["POST"])
+def getTender():
+    print("Fetching Tender Files...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    tenderId = request.json.get("tenderId", None)
+
+    response = fetchTender(targetTableClass, tenderId)
+
+    return(response)
 
 ############################ Login/ Register Operations ##################################
 

@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 db = SQLAlchemy()
 
 def getModelClass(targetTableClass):
-    print("Here")
+    # print("Here")
     import standardInterface.stardardInterfaceTables as STANDARD_INTERFACE_TABLES
     FIND_TABLE = None
     try:
@@ -170,3 +170,71 @@ class Images(db.Model):
     imageHeight = db.Column(db.Integer, nullable=False, default=213)
     partOfAlbum = db.Column(db.String(200), nullable=True)
 
+class Tenders(db.Model):
+    __tablename__ = "Tenders"   
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
+    description = db.Column(db.String(4000), nullable=False)
+    nitRef = db.Column(db.String(200), nullable=False)
+    bidStartDate = db.Column(db.DateTime(timezone=True), nullable=True)
+    bidEndDate = db.Column(db.String(200), nullable=False)
+    bidOpeningDate = db.Column(db.String(200), nullable=False)
+    
+    tenderFilesActual = db.Column(ARRAY(db.String), nullable=True, default=[])  # List of strings/files
+    tenderFilesStored = db.Column(ARRAY(db.String), nullable=True, default=[])  # List of strings/files
+
+
+    uploadedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    uploadedBy = db.Column(db.String(100), nullable=True)
+
+    downloadedTimes = db.Column(db.Integer, nullable=False, default=0)
+
+    @classmethod
+    def get_upload_path(cls):
+        return "\More\Tenders"
+    
+    
+    @property
+    def serialize(self):
+       """Return object data in easily serializable format"""
+       return {
+            'id': self.id,
+            'description': self.description,
+            'nitRef': self.nitRef,
+            'bidStartDate': getJSCompatibleTimeStamp(self.bidStartDate),
+            'bidEndDate': self.bidEndDate,
+            'bidOpeningDate': self.bidOpeningDate,
+            'tenderFilesActual': self.tenderFilesActual,
+            'downloadedTimes': self.downloadedTimes,
+            'uploadedBy': self.uploadedBy,
+            'uploadedOn': getJSCompatibleTimeStamp(self.uploadedOn),
+            'downloadedTimes': self.downloadedTimes 
+       }
+    
+    
+    @classmethod
+    def get_upload_points(cls):
+        return {}
+
+    @classmethod
+    def get_data_to_display(cls):
+        return {}
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        return {}
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        return {}
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        return False
+
+    @classmethod
+    def get_default_filter(cls):
+        return None
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        return True
