@@ -118,10 +118,11 @@ def fetchAllTenders(targetTableClass):
         #############################################################################################################
 
 
-        albums = TableClass.query.all()
+        # tenders = TableClass.query.all()
+        tenders = TableClass.query.order_by(TableClass.bidStartDate).all()
 
         data = {
-            "data": [ row.serialize for row in albums ],
+            "data": [ row.serialize for row in tenders ],
             # "dataInfo": dataInfo
         }
 
