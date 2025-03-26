@@ -4,9 +4,9 @@ from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
 # For websocket connection.
-from flask_socketio import SocketIO, send
-import time
-from scheduledTasks.realTimeSCADA import getSCADADATA
+# from flask_socketio import SocketIO, send
+# import time
+# from scheduledTasks.realTimeSCADA import getSCADADATA
 
 from flask_cors import CORS
 from datetime import timedelta
@@ -30,11 +30,12 @@ from tender.tender import addNewTender, fetchAllTenders, deleteOneTender, fetchT
 from models.models import db
 from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
-
+from datetime import datetime
 #   edit by 00339
 # from flask_mail import Mail
 # from celery import Celery
 #   edit by 00339
+from scada.realTimeData import realTimeSCADAData
 
 
 
@@ -103,6 +104,19 @@ jwt = JWTManager(app)
 # @socketio.on("disconnect")
 # def handle_disconnect():
 #     print("Client disconnected")
+
+
+# For now we will use http polling.
+
+@app.route('/getScadaData', methods=['GET'])
+def getScadaData():
+    # Simulating some changing data (e.g., timestamp)
+
+    return realTimeSCADAData()
+
+
+
+
 ###############################################################################################
 
 
@@ -111,6 +125,45 @@ def hello():
     # print(os.getenv('JWT_KEY'))
     # print(len(os.getenv('JWT_KEY')))
     return 'Hello, World!'
+
+@app.route('/updateTotalViews')
+def updateTotalViews():
+    # Define the file path
+    # file_path = "./configFiles/counter.conf"
+
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(BASE_DIR, "configFiles")
+
+    file_path = os.path.join(config_path, "counter.conf")
+
+    if not os.path.exists(file_path):
+        with open(file_path, "w") as f:
+            f.write("TOTAL_VIEWS: 0\n")
+        print("✅ counter.conf file created!")
+
+
+    try:
+        # Read the current value
+        with open(file_path, "r") as file:
+            line = file.readline().strip()
+            key, value = line.split(":")
+            key = key.strip()
+            value = int(value.strip())  # Convert value to integer
+
+        # Increment the value
+        value += 1
+
+        # Write the updated value back
+        with open(file_path, "w") as file:
+            file.write(f"{key} : {value}\n")
+
+        # print(f"Updated {key} to {value}")
+        return jsonify({"data" : str(value)})
+    except Exception as e:
+        print(e)
+        return jsonify({"data" : "NAN"})
+
 
 
 ############################# Utility Functions ##########################################
