@@ -66,7 +66,7 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 # CORS(app)
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
 
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "http://10.3.101.179:3001", "http://10.3.200.152:3001"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "https://newwebsite.erldc.in:3001", "https://newwebsite.erldc.in", "http://10.3.200.152:3001", "http://10.3.101.152", "http://10.3.200.128:3001", "http://10.3.101.128"]}})
 
 
 # Setup the Flask-JWT-Extended extension
