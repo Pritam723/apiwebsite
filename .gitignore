@@ -4,6 +4,10 @@ apivenv/
 /apivenv
 .env
 /.env
+apibackend/certs
+apibackend\\certs
+/apibackend/certs
+\\apibackend\\certs
 apibackend/.env
 apibackend\\.env
 /apibackend/.env

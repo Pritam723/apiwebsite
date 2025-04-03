@@ -23,8 +23,8 @@ class ReactiveReconcilation(StandardInterface):
 
     @classmethod
     def get_data_to_display(cls):
-        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": True, "year": True,
-                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": True, "actualUploadDate": False, "size": True }
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": True, "year": False,
+                        "fy": True, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": True, "actualUploadDate": False, "size": True }
         return DATA_TO_DISPLAY
     
     @classmethod

@@ -14,6 +14,7 @@ def getJSCompatibleTimeStamp(dt):
     return int(dt.timestamp() * 1000)
 
 def fetchPageMetaData(current_user, targetTableClass):
+    print("Fetching meta")
     try:
         # import time
         # time.sleep(2)
@@ -42,8 +43,8 @@ def fetchPageMetaData(current_user, targetTableClass):
         allowedWriteRoles = permissions['WRITE_PERMISSION']
         # {'READ_PERMISSION': [],'WRITE_PERMISSION': []}
 
-        print(allowedReadRoles)
-        print(allowedWriteRoles)
+        # print(allowedReadRoles)
+        # print(allowedWriteRoles)
 
         #############################################################################################################
 
@@ -80,6 +81,8 @@ def fetchPageMetaData(current_user, targetTableClass):
             "filtersInUse": filtersInUse,
             "defaultFiltering": defaultFilterning,
         }
+
+        # print(dynamicMetaData)
 
 
 

@@ -15,8 +15,11 @@ def getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info):
     #  'email': 'pritam.dutta@grid-india.in', 'organization': 'ERLDC GRID-INDIA', 'roles': ['SO_ADMIN', 'IT_ADMIN']}
 
     if user_info is None:
-        return False, False
-
+        # Then we are sure that write is false. And read will be true if ALL is allowed.
+        if(Roles.ALL in allowedReadRoles):
+            return True, False
+        else:
+            return False, False
     readPermission = False
     writePermission = False
 

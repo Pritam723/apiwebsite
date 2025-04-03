@@ -54,5 +54,6 @@ PAGE_PERMISSIONS = {
     'WeeklyReports': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN,Roles.MO_ADMIN]},
     'YearAheadForecastingError': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
     'Albums': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.HR_ADMIN]},
-    'FTCDocuments': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.MO_ADMIN]}
+    'FTCDocuments': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.MO_ADMIN]},
+    'Tenders': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.CS_ADMIN]} 
 }
