@@ -24,6 +24,7 @@ MULTIPLE_UPLOADS = {
 
 
 UPLOAD_POINTS_CHOICE = {
+    "NONE": {},
     "FILE_DATE" : { "fileDate": True},
     "WEEK_STARTS_ENDS" : { "weekStartsEnds": True},
     "MONTH": {"month" : True},

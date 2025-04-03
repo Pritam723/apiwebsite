@@ -22,7 +22,7 @@ def getModelClass(targetTableClass):
 
 # All the Classes Inheriting this should be inside standardInterface.stardardInterfaceTables
 class StandardInterface(db.Model):
-    __abstract__ = True
+    _abstract_ = True
     
     # id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 

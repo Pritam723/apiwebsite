@@ -4,6 +4,7 @@ from .roles import Roles
 USER_ROLES = {
     "00091" : [Roles.SUPER_ADMIN],
     "00339" : [Roles.SO_ADMIN],
+<<<<<<< HEAD
     "00198" : [Roles.SO_ADMIN],
     "50088" : [Roles.SO_ADMIN],
     "00203" : [Roles.SO_ADMIN],
@@ -20,4 +21,7 @@ USER_ROLES = {
     "60025" : [Roles.CS_ADMIN],
     "00249" : [Roles.SCADA_ADMIN],
     "00261" : [Roles.SCADA_ADMIN],
+=======
+    "00198" : [Roles.SO_ADMIN,Roles.MO_ADMIN],
+>>>>>>> 536a4e26584e5c3a61bfd407bf2bf328acc838ac
 }

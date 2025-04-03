@@ -53,7 +53,13 @@ PAGE_PERMISSIONS = {
     'WeekAheadRollingForecast': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
     'WeeklyReports': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN,Roles.MO_ADMIN]},
     'YearAheadForecastingError': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
+<<<<<<< HEAD
     'Albums': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.HR_ADMIN]},
     'FTCDocuments': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.MO_ADMIN]},
     'Tenders': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.CS_ADMIN]} 
+=======
+    'Albums': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.SO_ADMIN]},
+    'Tenders': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.CS_ADMIN]} ,
+    'FTCDocuments': {'READ_PERMISSION': [Roles.ALL],'WRITE_PERMISSION': [Roles.MO_ADMIN]} 
+>>>>>>> 536a4e26584e5c3a61bfd407bf2bf328acc838ac
 }
