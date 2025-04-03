@@ -53,8 +53,8 @@ from standardInterface.stardardInterfaceTables.SupplementaryAndPLIBill import Su
 from standardInterface.stardardInterfaceTables.QuarterlyReconciliationStatement import QuarterlyReconciliationStatement
 from standardInterface.stardardInterfaceTables.PSDF import PSDF
 from standardInterface.stardardInterfaceTables.CongestionReport import CongestionReport
-
-from models.models import User, UserRoles,PagePermissions
+from standardInterface.stardardInterfaceTables.FTCDocuments import FTCDocuments
+from models.models import User, UserRoles,PagePermissions,Albums
 
 def runMigration(app, db):
     with app.app_context():

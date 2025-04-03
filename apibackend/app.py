@@ -4,9 +4,9 @@ from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
 # For websocket connection.
-from flask_socketio import SocketIO, send
-import time
-from scheduledTasks.realTimeSCADA import getSCADADATA
+# from flask_socketio import SocketIO, send
+# import time
+# from scheduledTasks.realTimeSCADA import getSCADADATA
 
 from flask_cors import CORS
 from datetime import timedelta
@@ -22,14 +22,20 @@ from standardInterface.standardDeleteInterface import deleteFromStandardTable
 from standardInterface.standardQueryInterface import fetchDataFromStandardTable, downloadFromStandardTable
 from standardInterface.standardInterfaceUtilities import getFinancialYearList
 
+from album.album import addNewAlbum, fetchAllAlbums, deleteAnAlbum, fetchAlbum
+
+from tender.tender import addNewTender, fetchAllTenders, deleteOneTender, fetchTender
+
+
 from models.models import db
 from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
-
+from datetime import datetime
 #   edit by 00339
 # from flask_mail import Mail
 # from celery import Celery
 #   edit by 00339
+from scada.realTimeData import realTimeSCADAData
 
 
 
@@ -64,7 +70,7 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 # CORS(app)
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
 
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "http://10.3.101.179:3001", "http://10.3.101.175:3001"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "http://10.3.101.179:3001", "http://10.3.200.152:3001"]}})
 
 
 # Setup the Flask-JWT-Extended extension
@@ -98,6 +104,19 @@ jwt = JWTManager(app)
 # @socketio.on("disconnect")
 # def handle_disconnect():
 #     print("Client disconnected")
+
+
+# For now we will use http polling.
+
+@app.route('/getScadaData', methods=['GET'])
+def getScadaData():
+    # Simulating some changing data (e.g., timestamp)
+
+    return realTimeSCADAData()
+
+
+
+
 ###############################################################################################
 
 
@@ -106,6 +125,45 @@ def hello():
     # print(os.getenv('JWT_KEY'))
     # print(len(os.getenv('JWT_KEY')))
     return 'Hello, World!'
+
+@app.route('/updateTotalViews')
+def updateTotalViews():
+    # Define the file path
+    # file_path = "./configFiles/counter.conf"
+
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(BASE_DIR, "configFiles")
+
+    file_path = os.path.join(config_path, "counter.conf")
+
+    if not os.path.exists(file_path):
+        with open(file_path, "w") as f:
+            f.write("TOTAL_VIEWS: 0\n")
+        print("✅ counter.conf file created!")
+
+
+    try:
+        # Read the current value
+        with open(file_path, "r") as file:
+            line = file.readline().strip()
+            key, value = line.split(":")
+            key = key.strip()
+            value = int(value.strip())  # Convert value to integer
+
+        # Increment the value
+        value += 1
+
+        # Write the updated value back
+        with open(file_path, "w") as file:
+            file.write(f"{key} : {value}\n")
+
+        # print(f"Updated {key} to {value}")
+        return jsonify({"data" : str(value)})
+    except Exception as e:
+        print(e)
+        return jsonify({"data" : "NAN"})
+
 
 
 ############################# Utility Functions ##########################################
@@ -124,6 +182,124 @@ def serve_image(filename):
 @app.route('/files/<filename>')
 def serve_file(filename):
     return send_from_directory("static/files", filename)
+
+############################ Album #######################################################
+
+@app.route("/addAlbum", methods = ["POST"])
+@jwt_required()
+def addAlbum():
+    print("Adding/Updating Album")
+    current_user = get_jwt_identity()
+
+    product = request.json.get("product", None)
+    files = request.json.get("files", None)
+    targetTableClass = request.json.get("targetTableClass", None)
+    # print(product)
+    # print(uploadPoints)
+
+    response = addNewAlbum(current_user, product, files, targetTableClass)
+    
+    return(response)
+
+
+@app.route("/deleteAlbum", methods = ["POST"])
+@jwt_required()
+def deleteAlbum():
+    print("Deleting Album")
+    current_user = get_jwt_identity()
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    albumId = request.json.get("albumId", None)
+
+    # print(product)
+    # print(uploadPoints)
+
+    response = deleteAnAlbum(current_user, albumId, targetTableClass)
+    
+    return(response)
+
+@app.route("/getAlbums", methods = ["POST"])
+def getAlbums():
+    print("Fetching Albums...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    year = request.json.get("year", None)
+
+    response = fetchAllAlbums(targetTableClass, year)
+
+    return(response)
+
+
+@app.route("/getAlbum", methods = ["POST"])
+def getAlbum():
+    print("Fetching Album...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    albumId = request.json.get("albumId", None)
+
+    response = fetchAlbum(targetTableClass, albumId)
+
+    return(response)
+
+
+
+
+############################ Tender #######################################################
+
+@app.route("/addTender", methods = ["POST"])
+@jwt_required()
+def addTender():
+    print("Adding/Updating Tender")
+    current_user = get_jwt_identity()
+
+    product = request.json.get("product", None)
+    files = request.json.get("files", None)
+    targetTableClass = request.json.get("targetTableClass", None)
+    # print(product)
+    # print(uploadPoints)
+
+    response = addNewTender(current_user, product, files, targetTableClass)
+    
+    return(response)
+
+
+@app.route("/deleteTender", methods = ["POST"])
+@jwt_required()
+def deleteTender():
+    print("Deleting Tender")
+    current_user = get_jwt_identity()
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    tenderId = request.json.get("tenderId", None)
+
+    # print(product)
+    # print(uploadPoints)
+
+    response = deleteOneTender(current_user, tenderId, targetTableClass)
+    
+    return(response)
+
+@app.route("/getTenders", methods = ["POST"])
+def getTenders():
+    print("Fetching Tenders...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+
+    response = fetchAllTenders(targetTableClass)
+
+    return(response)
+
+
+@app.route("/getTender", methods = ["POST"])
+def getTender():
+    print("Fetching Tender Files...")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    tenderId = request.json.get("tenderId", None)
+
+    response = fetchTender(targetTableClass, tenderId)
+
+    return(response)
 
 ############################ Login/ Register Operations ##################################
 

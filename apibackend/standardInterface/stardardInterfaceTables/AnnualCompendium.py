@@ -6,7 +6,7 @@ class AnnualCompendium(StandardInterface):
 
     @classmethod
     def get_upload_path(cls):
-        return "\Reports\ Annual Compendium"
+        return "\Reports\Annual Compendium"
 
     @classmethod
     def get_read_permissions(cls):

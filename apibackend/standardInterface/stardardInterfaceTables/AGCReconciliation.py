@@ -6,7 +6,7 @@ class AGCReconciliation(StandardInterface):
 
     @classmethod
     def get_upload_path(cls):
-        return "\Market Operation\Ancilliary Services/AGC Reconciliation"
+        return "\Market Operation\Ancilliary Services\AGC Reconciliation"
 
     @classmethod
     def get_read_permissions(cls):

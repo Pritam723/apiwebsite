@@ -6,7 +6,7 @@ class WeatherRelatedEvents(StandardInterface):
 
     @classmethod
     def get_upload_path(cls):
-        return "\Reports\ Weather Related Events"
+        return "\Reports\Weather Related Events"
 
     @classmethod
     def get_read_permissions(cls):
