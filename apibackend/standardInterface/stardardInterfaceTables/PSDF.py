@@ -23,18 +23,18 @@ class PSDF(StandardInterface):
     @classmethod
     def get_data_to_display(cls):
         DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
-                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size": True }
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": True, "actualUploadDate": False, "size": True }
         return DATA_TO_DISPLAY
     
     @classmethod
     def get_sort_in_use(cls):
         SORT_IN_USE = { "id": False, "fileName": True, "fileDate": True, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
-                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": False, "actualUploadDate": False, "size":True }
+                        "fy": False, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": True, "actualUploadDate": False, "size":True }
         return SORT_IN_USE
     
     @classmethod
     def get_filters_in_use(cls):
-        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": True, "Financial Year & Quarter": False}
+        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": True, "Financial Year": True, "Financial Year & Quarter": False}
         return FILTERS_IN_USE
     
     @classmethod

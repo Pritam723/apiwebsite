@@ -1,9 +1,12 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory, jsonify
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_jwt_extended import get_jwt_identity
 
-
+# For websocket connection.
+from flask_socketio import SocketIO, send
+import time
+from scheduledTasks.realTimeSCADA import getSCADADATA
 
 from flask_cors import CORS
 from datetime import timedelta
@@ -23,11 +26,19 @@ from models.models import db
 from models.modelUtilities import fetchPageMetaData
 from RUN_DB_MIGRATION import runMigration
 
+#   edit by 00339
+# from flask_mail import Mail
+# from celery import Celery
+#   edit by 00339
+
+
+
 
 # For DB Connection.
 # from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+# Uses the default "static/" folder
 
 # Reading the .env file.
 load_dotenv(dotenv_path=".env")
@@ -39,6 +50,9 @@ encoded_db_password = db_password.replace("@", "%40")
 db_location = os.getenv('DB_URL')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{db_user}:{encoded_db_password}@{db_location}"
 db.init_app(app)
+
+
+
 
 
 # Setting up File Upload Settings
@@ -60,6 +74,32 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 jwt = JWTManager(app)
 
 
+###################################### Setting up the websocket. ##################################
+# socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3001", "http://10.3.101.179:3001"])
+# @socketio.on("connect")
+# def handle_connect():
+#     data = getSCADADATA()
+#     print(data)
+#     time.sleep(2)
+#     socketio.emit("message", {"data": data})
+
+# @app.route('/testSocket', methods=["POST"])
+# def send_updates():
+#     print("Here")
+    
+#     # Get JSON data from request
+#     data = request.get_json()
+#     print("Received Data:", data)  # Debugging
+    
+#     # Emit WebSocket message
+#     socketio.emit("message", {"data": data})
+#     return jsonify({"message": "Data sent successfully"}), 200
+
+# @socketio.on("disconnect")
+# def handle_disconnect():
+#     print("Client disconnected")
+###############################################################################################
+
 
 @app.route('/')
 def hello():
@@ -73,6 +113,17 @@ def hello():
 @app.route("/getFYList", methods=["GET"])
 def getFYList():
     return getFinancialYearList(), 200
+
+
+########################### Serving static files #########################################
+
+@app.route('/images/<filename>')
+def serve_image(filename):
+    return send_from_directory("static/images", filename)
+
+@app.route('/files/<filename>')
+def serve_file(filename):
+    return send_from_directory("static/files", filename)
 
 ############################ Login/ Register Operations ##################################
 
@@ -220,3 +271,5 @@ if __name__ == '__main__':
     runMigration(app, db)
  
     app.run(debug = True, port = 4001, host = "0.0.0.0")
+    # socketio.run(app, debug=True, port=4001, host="0.0.0.0")
+

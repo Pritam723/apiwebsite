@@ -4,6 +4,8 @@ from auth.authUtilities import getPermissionFlags
 from flask_jwt_extended import get_jwt
 
 from .standardInterfaceUtilities import ResponseException
+from permissions.pagePermissions import PAGE_PERMISSIONS
+from permissions.roles import Roles
 
 def deleteFromStandardTable(current_user, productIdToDelete, targetTableClass):
     try:
@@ -18,22 +20,27 @@ def deleteFromStandardTable(current_user, productIdToDelete, targetTableClass):
         writePermission = False
 
 
-        allowedWriteRoles = TableClass.get_write_permissions()
-        allowedReadRoles = TableClass.get_read_permissions()
+        # allowedWriteRoles = TableClass.get_write_permissions()
+        # allowedReadRoles = TableClass.get_read_permissions()
         # print(allowedWriteRoles)
+        permissions = PAGE_PERMISSIONS.get(targetTableClass, {'READ_PERMISSION': [Roles.SUPER_ADMIN],'WRITE_PERMISSION': [Roles.SUPER_ADMIN]})
+        allowedReadRoles = permissions['READ_PERMISSION']
+        allowedWriteRoles = permissions['WRITE_PERMISSION']
+        # {'READ_PERMISSION': [],'WRITE_PERMISSION': []}
 
-        user_info = {}
+        user_info = None
         if current_user:
             # Get additional claims
             claims = get_jwt()
-            user_info = claims.get("user_info", {})
+            user_info = claims.get("user_info", None)
 
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
         if(writePermission == False):
             raise ResponseException({"message" : "You do not have permission to perform the action!!", "summary" : "Something went wrong", "status" : 403})
-        #############################################################################################################
         
+        #############################################################################################################
+
         product = TableClass.query.filter_by(id=productIdToDelete).first()
         if product:
             db.session.delete(product)

@@ -6,8 +6,10 @@ from auth.authUtilities import getPermissionFlags
 from flask_jwt_extended import get_jwt
 from .standardInterfaceUtilities import ResponseException
 import time
+from permissions.pagePermissions import PAGE_PERMISSIONS
+from permissions.roles import Roles
 
-def addDataToStandardTable(product, uploadPoints, files, TableClass):
+def addDataToStandardTable(product, uploadPoints, files, TableClass, userId):
     # time.sleep(5)
     preprocessDataBeforeAddition(product, uploadPoints)
     print("Data Preprocessed before addition")
@@ -40,7 +42,7 @@ def addDataToStandardTable(product, uploadPoints, files, TableClass):
 
         product["fileName"] = file["fileName"]
         product["size"] = str(file["size"]) # In Bytes
-        product["uploadedBy"] = "Current User"
+        product["uploadedBy"] = userId
         product["isMigrated"] = False
         product["isDeleted"] = False
         product["filePath"] = f"{uploadPath}\{newFileName}"
@@ -71,7 +73,7 @@ def addDataToStandardTable(product, uploadPoints, files, TableClass):
 
     return jsonify(jsonData), 200
 
-def updateDataToStandardTable(product, uploadPoints, files, TableClass):
+def updateDataToStandardTable(product, uploadPoints, files, TableClass, userId):
     
     preprocessDataBeforeUpdate(product, uploadPoints)
     print("Data Preprocessed before updation")
@@ -126,7 +128,7 @@ def updateDataToStandardTable(product, uploadPoints, files, TableClass):
 
     setattr(old_product, "fileName", file["fileName"])
     setattr(old_product, "size", str(file["size"])) # In Bytes
-    setattr(old_product, "uploadedBy", "Current User")
+    setattr(old_product, "uploadedBy", userId)
     setattr(old_product, "isMigrated", False)
     setattr(old_product, "isDeleted", False)
     setattr(old_product, "filePath", f"{uploadPath}\{newFileName}")
@@ -172,15 +174,19 @@ def dataToStandardTable(current_user, product, uploadPoints, files, targetTableC
         writePermission = False
 
 
-        allowedWriteRoles = TableClass.get_write_permissions()
-        allowedReadRoles = TableClass.get_read_permissions()
+        # allowedWriteRoles = TableClass.get_write_permissions()
+        # allowedReadRoles = TableClass.get_read_permissions()
         # print(allowedWriteRoles)
+        permissions = PAGE_PERMISSIONS.get(targetTableClass, {'READ_PERMISSION': [Roles.SUPER_ADMIN],'WRITE_PERMISSION': [Roles.SUPER_ADMIN]})
+        allowedReadRoles = permissions['READ_PERMISSION']
+        allowedWriteRoles = permissions['WRITE_PERMISSION']
+        # {'READ_PERMISSION': [],'WRITE_PERMISSION': []}
 
-        user_info = {}
+        user_info = None
         if current_user:
             # Get additional claims
             claims = get_jwt()
-            user_info = claims.get("user_info", {})
+            user_info = claims.get("user_info", None)
 
         readPermission, writePermission = getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info)
 
@@ -189,13 +195,13 @@ def dataToStandardTable(current_user, product, uploadPoints, files, targetTableC
 
         #############################################################################################################
 
-
+        userId = user_info.get("user_id", None)
         if(product.get("id") is None):
             print("Adding Data")
-            return addDataToStandardTable(product, uploadPoints, files, TableClass)
+            return addDataToStandardTable(product, uploadPoints, files, TableClass, userId)
         else:
             print("Updating Data")
-            return updateDataToStandardTable(product, uploadPoints, files, TableClass)
+            return updateDataToStandardTable(product, uploadPoints, files, TableClass, userId)
     
     except ResponseException as e:
   

@@ -1,6 +1,7 @@
 import re
 import random
-
+from permissions.userRoles import USER_ROLES 
+from permissions.roles import Roles
 class ResponseException(Exception):
     pass
 
@@ -8,19 +9,24 @@ def getPermissionFlags(allowedReadRoles, allowedWriteRoles, user_info):
     
     # user_info = {'user_id': '00091', 'department': 'IT', 'eid': '00091', 'name': 'Pritam Dutta', 
     #  'email': 'pritam.dutta@grid-india.in', 'organization': 'ERLDC GRID-INDIA', 'roles': ['SO_ADMIN', 'IT_ADMIN']}
+
+    if user_info is None:
+        return False, False
+
     readPermission = False
     writePermission = False
 
-    userRoles = user_info.get("roles", [])
+    # userRoles = user_info.get("roles", [])
+    userRoles = USER_ROLES.get(user_info["user_id"], [Roles.VIEWER])
 
     if(len(set(userRoles) & set(allowedReadRoles))):
         readPermission = True
     if(len(set(userRoles) & set(allowedWriteRoles))):
         writePermission = True
         
-    if(("ALL" in allowedReadRoles) or ("SUPER_ADMIN" in userRoles)):
+    if((Roles.ALL in allowedReadRoles) or (Roles.SUPER_ADMIN in userRoles)):
         readPermission = True
-    if(("ALL" in allowedWriteRoles) or ("SUPER_ADMIN" in userRoles)):
+    if((Roles.ALL in allowedWriteRoles) or (Roles.SUPER_ADMIN in userRoles)):
         writePermission = True
 
     return readPermission, writePermission

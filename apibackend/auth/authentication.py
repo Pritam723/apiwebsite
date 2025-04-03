@@ -5,15 +5,48 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 from datetime import datetime, timedelta
-
 
 from .authUtilities import ResponseException, is_valid_password, generate_validation_code
 from .ldap import authenticate_ldap, isNotLDAPUser
 from models.models import db, User
+from permissions.userRoles import USER_ROLES
+from permissions.roles import Roles
 
 import os
+import subprocess
+import asyncio
+import aiosmtplib
+from email.message import EmailMessage
+
+
+async def send_verification_email(recipient_email, validation_code):
+   
+    senderusername = os.getenv('SENDERUSERNAME')
+    senderpassword = os.getenv('SENDERPASSWORD')
+    exe_path ="./EmailSender/OTPSender.exe"
+  
+    try:
+        # Call the .exe file with four arguments
+        process = await asyncio.create_subprocess_exec(
+            exe_path, senderusername,senderpassword,recipient_email,str(validation_code),
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+
+        stdout, stderr = await process.communicate()
+
+        if process.returncode == 0:
+            print(f"✅ OTP email sent successfully to {recipient_email}")
+            print(stdout.decode())
+        else:
+            print(f"❌ Error sending OTP email: {stderr.decode()}")
+    
+    except Exception as e:
+        print(f"⚠️ Failed to send verification email: {e}")
+
+
+
+
 
 # Create a route to authenticate your users and return JWTs. The
 # create_access_token() function is used to actually generate the JWT.
@@ -46,9 +79,11 @@ def create_token(user_id, password):
         if(user_data is None):
             raise ResponseException({"message" : "Incorrect username or password.", "summary" : "Incorrect username or password.", "status" : 401})
 
-        user_data["roles"] =  ["SO_ADMIN", "IT_ADMIN"] # Change this later.
-
-
+        # user_data["roles"] =  ["SO_ADMIN", "IT_ADMIN"] # Change this later.
+        # user_data["roles"] = USER_ROLES.get(user_id, [Roles.VIEWER])
+        # Not sending Roles in frontend.
+        
+        print(user_data)
         customIdentity = user_id
         # additional_claims = {"aud": "some_audience", "foo": "bar"}
         # user_data = {"user_id": user_id, "name" : "Pritam Dutta", "mobileNumber": "8981224244"
@@ -198,6 +233,8 @@ def register_user(user_data):
         db.session.add(new_user)
         db.session.commit()
 
+         # Send the verification email asynchronously
+        asyncio.run(send_verification_email(email, randomCode))
 
         data = {
             "info": f"User registered successfully with UserID/EmailID: {email}"
@@ -370,6 +407,10 @@ def forgot_password(user_data):
         
         # Commit changes to database
         db.session.commit()
+
+        # Email OTP to email address.
+        asyncio.run(send_verification_email(email, randomCode))
+        # Try asynchronous email sending here.
 
         
         data = {
