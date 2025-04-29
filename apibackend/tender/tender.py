@@ -323,10 +323,6 @@ def addFilesToNewTender(product, files, TableClass, userId):
     # tenderFilesStored
     # downloadedTimes
 
-
-
-
- 
     # print(product)
     product_to_add = TableClass(**product)
     

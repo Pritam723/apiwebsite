@@ -16,7 +16,7 @@ class Disbursements(StandardInterface):
     
     @classmethod
     def get_upload_points(cls):
-        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["MONTH"]
         return UPLOAD_POINTS
 
     @classmethod

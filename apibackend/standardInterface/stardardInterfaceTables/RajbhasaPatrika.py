@@ -19,7 +19,7 @@ class RajbhasaPatrika(StandardInterface):
     
     @classmethod
     def get_upload_points(cls):
-        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FYQ"]
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
         return UPLOAD_POINTS
 
     @classmethod

@@ -18,26 +18,26 @@ class ReconciliationApplicant(StandardInterface):
     
     @classmethod
     def get_upload_points(cls):
-        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FYQ"]
         return UPLOAD_POINTS
 
     @classmethod
     def get_data_to_display(cls):
-        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
-                        "fy": True, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": True, "actualUploadDate": False, "size": True }
+        DATA_TO_DISPLAY = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "fy": True,  "quarter": True, "year": False,
+                        "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": True, "actualUploadDate": False, "size": True }
         return DATA_TO_DISPLAY
     
     @classmethod
     def get_sort_in_use(cls):
-        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": False, "year": False,
+        SORT_IN_USE = { "id": False, "fileName": True, "fileDate": False, "weekStartsEnds": False, "month": False, "quarter": True, "year": False,
                         "fy": True, "fileDateFromTo": False, "uploadedOn": False, "uploadedBy": True, "actualUploadDate": False, "size": True }
         return SORT_IN_USE
     
     @classmethod
     def get_filters_in_use(cls):
-        FILTERS_IN_USE = { "Date Range": False, "Year": True, "Month": True, "Financial Year": True, "Financial Year & Quarter": True}
+        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": False, "Financial Year": True, "Financial Year & Quarter": True}
         return FILTERS_IN_USE
-    
+
     @classmethod
     def get_custom_uploaded_on_flag(cls):
         CUSTOM_UPLOADED_ON_FLAG = CUSTOM_UPLOADED_ON["TRUE"] # To Change it to False, Make it to CUSTOM_UPLOADED_ON["FALSE"]

@@ -58,7 +58,7 @@ def downloadFromStandardTable(current_user, productIdToDownload, targetTableClas
             raise ResponseException({"message" : "Entry not found!!", "summary" : "Something went wrong", "status" : 500})
 
         uploadPath = app.config['UPLOAD_FOLDER'] + product.filePath
-        print(uploadPath)
+        # print(uploadPath)
         # Validate file existence
         return send_file(uploadPath, as_attachment=True)
 
@@ -97,6 +97,7 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
     # time.sleep(2) # Introducing delay.
     # filterOptions looks like:
     # {'filterBy': 'Date Range', 'filterRange': None or [None, None], 'filterFY': None, 'filterQuarter': None, 'defaultFiltering': 'CURRENT_YEAR'}
+    print(current_user, filterOptions, targetTableClass)
    
     try:
         # m = 0/0 # Generating Error
@@ -138,6 +139,8 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
             products = TableClass.query\
                 .order_by(TableClass.fileDate.desc())\
                     .all()
+            # print("hi")
+            # print(products)
         else:
             # Apply Filters here based on queryStartDateObj, queryEndDateObj.
             # Actually the way we have stored the data, we can simply compare with TableName.startDateToFilter
@@ -147,7 +150,8 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
                                             .all()
             # dataInfo = f"Showing Data From {queryStartDateObj.strftime('%d-%m-%Y')} to {queryEndDateObj.strftime('%d-%m-%Y')}."
             
-
+            # print("hello")
+            # print(products)
             dataInfo = f"Showing Data From {formatDateWithSuffix(queryStartDateObj)} to {formatDateWithSuffix(queryEndDateObj)}."
 
         # print(products)
@@ -156,6 +160,7 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
             "products": [ row.serialize for row in products ],
             "dataInfo": dataInfo
         }
+        
 
         jsonData = {
             "success": True,
@@ -186,8 +191,8 @@ def fetchDataFromStandardTable(current_user, filterOptions, targetTableClass):
     
     except Exception as e:
 
-        print(e)
-        print(str(e))
+        # print(e)
+        # print(str(e))
 
         jsonData = {
             "success": False,

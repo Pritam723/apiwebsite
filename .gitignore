@@ -4,15 +4,8 @@ apivenv/
 /apivenv
 .env
 /.env
-<<<<<<< HEAD
-apibackend/certs
-apibackend\\certs
-/apibackend/certs
-\\apibackend\\certs
-=======
 venv/
 /venv
->>>>>>> 536a4e26584e5c3a61bfd407bf2bf328acc838ac
 apibackend/.env
 apibackend\\.env
 /apibackend/.env
@@ -28,6 +21,10 @@ apibackend/uploads
 apibackend\\uploads
 /apibackend/uploads
 \\apibackend\\uploads
+apibackend/certs
+apibackend\\certs
+/apibackend/certs
+\\apibackend\\certs
 apibackend/static
 apibackend\\static
 /apibackend/static

@@ -34,7 +34,7 @@ class DailyPSPReport(StandardInterface):
     
     @classmethod
     def get_filters_in_use(cls):
-        FILTERS_IN_USE = { "Date Range": True, "Year": True, "Month": True, "Financial Year": True, "Financial Year & Quarter": False}
+        FILTERS_IN_USE = { "Date Range": False, "Year": True, "Month": False, "Financial Year": False, "Financial Year & Quarter": False}
         return FILTERS_IN_USE
     
     @classmethod

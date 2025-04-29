@@ -18,7 +18,7 @@ class IntraDayForecastingError(StandardInterface):
     
     @classmethod
     def get_upload_points(cls):
-        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FILE_DATE"]
         return UPLOAD_POINTS
 
     @classmethod

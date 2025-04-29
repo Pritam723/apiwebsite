@@ -17,7 +17,7 @@ class WeekAheadRollingForecast(StandardInterface):
     
     @classmethod
     def get_upload_points(cls):
-        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["FY"]
+        UPLOAD_POINTS = UPLOAD_POINTS_CHOICE["WEEK_STARTS_ENDS"]
         return UPLOAD_POINTS
 
     @classmethod

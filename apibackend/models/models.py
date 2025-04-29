@@ -22,7 +22,7 @@ def getModelClass(targetTableClass):
 
 # All the Classes Inheriting this should be inside standardInterface.stardardInterfaceTables
 class StandardInterface(db.Model):
-    _abstract_ = True
+    __abstract__ = True
     
     # id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 
@@ -208,6 +208,62 @@ class Tenders(db.Model):
             'uploadedBy': self.uploadedBy,
             'uploadedOn': getJSCompatibleTimeStamp(self.uploadedOn),
             'downloadedTimes': self.downloadedTimes 
+       }
+    
+    
+    @classmethod
+    def get_upload_points(cls):
+        return {}
+
+    @classmethod
+    def get_data_to_display(cls):
+        return {}
+    
+    @classmethod
+    def get_sort_in_use(cls):
+        return {}
+    
+    @classmethod
+    def get_filters_in_use(cls):
+        return {}
+    
+    @classmethod
+    def get_custom_uploaded_on_flag(cls):
+        return False
+
+    @classmethod
+    def get_default_filter(cls):
+        return None
+    
+    @classmethod
+    def get_multiple_upload_flag(cls):
+        return True
+
+
+
+
+class HRDocuments(db.Model):
+    __tablename__ = "HRDocuments"   
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()), unique=True, nullable=False)
+    typeOfDocument = db.Column(db.String(200), nullable=False, unique=True)    
+    uploadedOn = db.Column(db.DateTime(timezone=True), nullable=True)
+    uploadedBy = db.Column(db.String(100), nullable=True)
+
+
+    @classmethod
+    def get_upload_path(cls):
+        # return "\More\Upload Documents\HR Documents"
+        # Use static path for this.
+        return None
+    
+    @property
+    def serialize(self):
+       """Return object data in easily serializable format"""
+       return {
+            'id': self.id,
+            'typeOfDocument': self.typeOfDocument,
+            'uploadedOn': getJSCompatibleTimeStamp(self.uploadedOn),
+            'uploadedBy': self.uploadedBy,
        }
     
     

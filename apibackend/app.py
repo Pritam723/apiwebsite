@@ -26,6 +26,7 @@ from album.album import addNewAlbum, fetchAllAlbums, deleteAnAlbum, fetchAlbum
 
 from tender.tender import addNewTender, fetchAllTenders, deleteOneTender, fetchTender
 
+from more.hrDocuments import addNewHRDocument, fetchAllHRDocuments
 
 from models.models import db
 from models.modelUtilities import fetchPageMetaData
@@ -70,7 +71,7 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 # CORS(app)
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
 
-CORS(app, resources={r"/*": {"origins": ["http://localhost:3001", "https://newwebsite.erldc.in:3001", "https://newwebsite.erldc.in", "http://10.3.200.152:3001", "http://10.3.101.152", "http://10.3.200.128:3001", "http://10.3.101.128"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3001","http://localhost", "https://newwebsite.erldc.in:3001", "https://newwebsite.erldc.in", "http://10.3.220.152:3001", "http://10.3.220.128:3001","http://10.3.220.152", "http://10.3.220.128" ]}})
 
 
 # Setup the Flask-JWT-Extended extension
@@ -124,7 +125,7 @@ def getScadaData():
 def hello():
     # print(os.getenv('JWT_KEY'))
     # print(len(os.getenv('JWT_KEY')))
-    return 'Hello, World!'
+    return 'You are getting data from ERLDC Website API!'
 
 @app.route('/updateTotalViews')
 def updateTotalViews():
@@ -241,6 +242,41 @@ def getAlbum():
 
     return(response)
 
+
+############################ HR Documents ##################################################
+
+@app.route("/addHRDocument", methods = ["POST"])
+@jwt_required()
+def addHRDocument():
+    print("Adding/Updating HRDocument")
+    current_user = get_jwt_identity()
+
+    product = request.json.get("product", None)
+    files = request.json.get("files", None)
+    targetTableClass = request.json.get("targetTableClass", None)
+    # print(product)
+    # print(uploadPoints)
+
+    # print(product, targetTableClass, len(files))
+
+    response = addNewHRDocument(current_user, product, files, targetTableClass)
+    
+    return(response)
+
+
+@app.route("/fetchHRDocuments", methods = ["POST"])
+def fetchHRDocuments():
+    print("Fetching HRDocument")
+
+    targetTableClass = request.json.get("targetTableClass", None)
+    # print(product)
+    # print(uploadPoints)
+
+    # print(product, targetTableClass, len(files))
+
+    response = fetchAllHRDocuments(targetTableClass)
+    
+    return(response)
 
 
 
@@ -441,12 +477,18 @@ def fetchStandardPageMetaData():
 ########################################################################################
 
 # main driver function
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    # Run Migration only if a new Table is added.
+#     # Run Migration only if a new Table is added.
+#     runMigration(app, db)
+#     app.run(debug = True, port = 4002, host = "0.0.0.0")
+
+#     # app.run(debug = False, port = 4001, host = "0.0.0.0", ssl_context=('certs/cert_2024.crt', 'certs/domain2.rsa'))
+#     # socketio.run(app, debug=True, port=4001, host="0.0.0.0")
+
+
+if __name__ == "__main__":
     runMigration(app, db)
-    app.run(debug = True, port = 4002, host = "0.0.0.0")
-
-    # app.run(debug = False, port = 4001, host = "0.0.0.0", ssl_context=('certs/cert_2024.crt', 'certs/domain2.rsa'))
-    # socketio.run(app, debug=True, port=4001, host="0.0.0.0")
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=4001)
 

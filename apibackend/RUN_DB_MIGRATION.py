@@ -38,6 +38,7 @@ from standardInterface.stardardInterfaceTables.FTCDocuments import FTCDocuments
 from standardInterface.stardardInterfaceTables.ReconciliationCTU import ReconciliationCTU
 from standardInterface.stardardInterfaceTables.ReconciliationApplicant import ReconciliationApplicant
 from standardInterface.stardardInterfaceTables.Disbursements import Disbursements
+from standardInterface.stardardInterfaceTables.Refunds import Refunds
 from standardInterface.stardardInterfaceTables.DSMDisbursementLetter import DSMDisbursementLetter
 from standardInterface.stardardInterfaceTables.DSMReconcilation import DSMReconcilation
 from standardInterface.stardardInterfaceTables.ReactiveReconcilation import ReactiveReconcilation
@@ -53,8 +54,7 @@ from standardInterface.stardardInterfaceTables.SupplementaryAndPLIBill import Su
 from standardInterface.stardardInterfaceTables.QuarterlyReconciliationStatement import QuarterlyReconciliationStatement
 from standardInterface.stardardInterfaceTables.PSDF import PSDF
 from standardInterface.stardardInterfaceTables.CongestionReport import CongestionReport
-from standardInterface.stardardInterfaceTables.FTCDocuments import FTCDocuments
-from models.models import User, UserRoles,PagePermissions,Albums
+from models.models import User, UserRoles,PagePermissions,Albums,HRDocuments,Tenders
 
 def runMigration(app, db):
     with app.app_context():
