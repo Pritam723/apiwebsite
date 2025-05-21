@@ -15,6 +15,7 @@ def getModelClass(targetTableClass):
         return eval(FIND_TABLE)
     except Exception as e:
         print(e)
+        print("Not able to find it..........")
         FIND_TABLE = f"{targetTableClass}"
         return eval(FIND_TABLE)
 

@@ -180,6 +180,8 @@ def getFYList():
 def serve_image(filename):
     return send_from_directory("static/images", filename)
 
+
+
 @app.route('/files/<filename>')
 def serve_file(filename):
     return send_from_directory("static/files", filename)
@@ -477,18 +479,18 @@ def fetchStandardPageMetaData():
 ########################################################################################
 
 # main driver function
-# if __name__ == '__main__':
+if __name__ == '__main__':
 
-#     # Run Migration only if a new Table is added.
-#     runMigration(app, db)
-#     app.run(debug = True, port = 4002, host = "0.0.0.0")
-
-#     # app.run(debug = False, port = 4001, host = "0.0.0.0", ssl_context=('certs/cert_2024.crt', 'certs/domain2.rsa'))
-#     # socketio.run(app, debug=True, port=4001, host="0.0.0.0")
-
-
-if __name__ == "__main__":
+    # Run Migration only if a new Table is added.
     runMigration(app, db)
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=4001)
+    app.run(debug = True, port = 4001, host = "0.0.0.0")
+
+    # app.run(debug = False, port = 4001, host = "0.0.0.0", ssl_context=('certs/cert_2024.crt', 'certs/domain2.rsa'))
+    # socketio.run(app, debug=True, port=4001, host="0.0.0.0")
+
+
+# if __name__ == "__main__":
+#     runMigration(app, db)
+#     from waitress import serve
+#     serve(app, host="0.0.0.0", port=4001)
 

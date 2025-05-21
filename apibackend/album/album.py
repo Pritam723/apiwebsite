@@ -13,6 +13,7 @@ from .albumUtilities import saveWithUniqueName
 from datetime import  datetime, timedelta
 # from enum import Enum
 import pytz
+from standardInterface.standardInterfaceUtilities import jsDateStrToTimeZoneAwareDate
 
 def fetchAlbum(targetTableClass, albumId):
     # time.sleep(2) # Introducing delay.
@@ -109,6 +110,9 @@ def fetchAllAlbums(targetTableClass, year):
 
 
         albums = TableClass.query.filter(TableClass.year == yearObj).all()
+
+        print("Printing length of albums")
+        print(len(albums))
 
         data = {
             "data": [ row.serialize for row in albums ],
@@ -306,6 +310,15 @@ def addImagesToNewAlbum(product, files, TableClass, userId):
 
     product["images"] = files_to_add
     product["noImages"] = len(files_to_add)
+
+    product["year"] = jsDateStrToTimeZoneAwareDate(product["year"])
+
+    # year = str(product["year"])
+    # product["year"] = datetime.strptime(year, "%Y")
+    print(product["year"])
+
+    print(type(product["year"]))
+
     # print(product)
     product_to_add = TableClass(**product)
     
